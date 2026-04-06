@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { PH_BRANCH_ID } from '@/lib/constants';
 
 export async function POST(request: NextRequest) {
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       booking_source: 'web' as const,
     };
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('bookings')
       .insert(bookingData)
       .select()
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     const dateTo = searchParams.get('date_to');
     const type = searchParams.get('type');
 
-    let query = supabase
+    let query = getSupabase()
       .from('bookings')
       .select('*')
       .eq('branch_id', PH_BRANCH_ID)

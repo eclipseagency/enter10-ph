@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { PH_BRANCH_ID } from '@/lib/constants';
 
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { id } = await ctx.params;
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('bookings')
       .select('*')
       .eq('id', id)
@@ -50,7 +50,7 @@ export async function PATCH(
       );
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('bookings')
       .update({ status })
       .eq('id', id)
