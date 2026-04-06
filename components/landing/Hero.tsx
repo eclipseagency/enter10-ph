@@ -8,7 +8,7 @@ export default function Hero() {
   const { t } = useI18n();
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center">
+    <section className="relative w-full min-h-screen flex items-center justify-center border-b border-white/5">
       {/* Video background */}
       <video
         autoPlay
@@ -38,11 +38,11 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center animate-fadeIn">
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight text-white text-glow-blue mb-6">
+        <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold text-white text-glow-blue mb-6" style={{ letterSpacing: '-0.03em' }}>
           {t('hero.tagline')}
         </h1>
 
-        <p className="text-lg sm:text-xl text-[#d1d5db] max-w-2xl mx-auto mb-10">
+        <p className="text-lg sm:text-xl max-w-2xl mx-auto mb-10" style={{ color: '#d1d5db' }}>
           {t('hero.subtitle')}
         </p>
 

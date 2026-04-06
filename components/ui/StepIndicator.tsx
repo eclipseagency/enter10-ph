@@ -19,9 +19,9 @@ export default function StepIndicator({ steps, currentStep }: StepIndicatorProps
                   'w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold',
                   'transition-all duration-300',
                   isActive
-                    ? 'bg-neon-blue text-black shadow-[0_0_18px_rgba(0,212,255,0.5)]'
+                    ? 'bg-[#00D4FF] text-black shadow-[0_0_12px_rgba(0,212,255,0.4)]'
                     : isCompleted
-                      ? 'bg-neon-blue/20 text-neon-blue border border-neon-blue/40'
+                      ? 'bg-[rgba(0,212,255,0.15)] text-[#5ac8e0] border border-[rgba(0,212,255,0.3)]'
                       : 'bg-bg-card text-text-dim border border-border',
                 ].join(' ')}
               >
@@ -35,8 +35,8 @@ export default function StepIndicator({ steps, currentStep }: StepIndicatorProps
               </div>
               <span
                 className={[
-                  'text-xs font-medium whitespace-nowrap',
-                  isActive ? 'text-neon-blue text-glow-blue' : isCompleted ? 'text-text-muted' : 'text-text-dim',
+                  'text-[12px] font-medium whitespace-nowrap uppercase tracking-[0.5px]',
+                  isActive ? 'text-[#00D4FF] text-glow-blue' : isCompleted ? 'text-text-muted' : 'text-text-dim',
                 ].join(' ')}
               >
                 {label}
@@ -49,7 +49,7 @@ export default function StepIndicator({ steps, currentStep }: StepIndicatorProps
                 <div
                   className={[
                     'h-0.5 w-full rounded-full transition-colors duration-300',
-                    isCompleted ? 'bg-neon-blue/50' : 'bg-border',
+                    isCompleted ? 'bg-[rgba(0,212,255,0.3)]' : 'bg-[rgba(255,255,255,0.1)]',
                   ].join(' ')}
                 />
               </div>

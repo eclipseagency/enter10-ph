@@ -50,7 +50,7 @@ export default function Footer() {
           {/* Brand column */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Image src="/images/logo.png" alt="Enter10" width={56} height={56} className="h-12 w-auto" />
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-text-muted">
+            <p className="mt-3 max-w-xs text-sm leading-relaxed" style={{ color: '#8a8f98' }}>
               {t('footer.tagline')}
             </p>
 
@@ -58,21 +58,21 @@ export default function Footer() {
             <div className="mt-5 flex items-center gap-3">
               <a
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted transition-colors hover:border-neon-blue hover:text-neon-blue"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border transition-colors hover:border-[#00D4FF] hover:text-[#00D4FF]" style={{ color: '#8a8f98' }}
                 aria-label="Facebook"
               >
                 <FacebookIcon />
               </a>
               <a
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted transition-colors hover:border-neon-blue hover:text-neon-blue"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border transition-colors hover:border-[#00D4FF] hover:text-[#00D4FF]" style={{ color: '#8a8f98' }}
                 aria-label="Instagram"
               >
                 <InstagramIcon />
               </a>
               <a
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted transition-colors hover:border-neon-blue hover:text-neon-blue"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border transition-colors hover:border-[#00D4FF] hover:text-[#00D4FF]" style={{ color: '#8a8f98' }}
                 aria-label="TikTok"
               >
                 <TikTokIcon />
@@ -82,7 +82,7 @@ export default function Footer() {
 
           {/* Quick links column */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
+            <h3 className="font-semibold uppercase" style={{ fontSize: '11px', letterSpacing: '2px', color: '#62666d' }}>
               {t('footer.quickLinks')}
             </h3>
             <ul className="mt-4 flex flex-col gap-2.5">
@@ -90,7 +90,8 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-text-muted transition-colors hover:text-neon-blue"
+                    className="text-sm transition-colors hover:text-[#f7f8f8]"
+                    style={{ color: '#8a8f98' }}
                   >
                     {t(NAV_I18N_KEYS[link.href])}
                   </Link>
@@ -101,11 +102,11 @@ export default function Footer() {
 
           {/* Hours column */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
+            <h3 className="font-semibold uppercase" style={{ fontSize: '11px', letterSpacing: '2px', color: '#62666d' }}>
               {t('footer.hours')}
             </h3>
             <ul className="mt-4 flex flex-col gap-2.5">
-              <li className="text-sm text-text-muted">
+              <li className="text-sm" style={{ color: '#8a8f98' }}>
                 <span className="text-white">{OPERATING_HOURS.weekday.label}</span>
                 <br />
                 {OPERATING_HOURS.weekday.open} &ndash;{' '}
@@ -113,7 +114,7 @@ export default function Footer() {
                   ? '12:00 MN'
                   : OPERATING_HOURS.weekday.close}
               </li>
-              <li className="text-sm text-text-muted">
+              <li className="text-sm" style={{ color: '#8a8f98' }}>
                 <span className="text-white">{OPERATING_HOURS.weekend.label}</span>
                 <br />
                 {OPERATING_HOURS.weekend.open} &ndash; {OPERATING_HOURS.weekend.close}{' '}
@@ -124,17 +125,18 @@ export default function Footer() {
 
           {/* Contact column */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
+            <h3 className="font-semibold uppercase" style={{ fontSize: '11px', letterSpacing: '2px', color: '#62666d' }}>
               {t('nav.contact')}
             </h3>
             <ul className="mt-4 flex flex-col gap-2.5">
-              <li className="text-sm leading-relaxed text-text-muted">
+              <li className="text-sm leading-relaxed" style={{ color: '#8a8f98' }}>
                 {VENUE_INFO.address}
               </li>
               <li>
                 <a
                   href={`tel:${VENUE_INFO.phone}`}
-                  className="text-sm text-text-muted transition-colors hover:text-neon-blue"
+                  className="text-sm transition-colors hover:text-[#f7f8f8]"
+                  style={{ color: '#8a8f98' }}
                 >
                   {VENUE_INFO.phone}
                 </a>
@@ -142,7 +144,8 @@ export default function Footer() {
               <li>
                 <a
                   href={`mailto:${VENUE_INFO.email}`}
-                  className="text-sm text-text-muted transition-colors hover:text-neon-blue"
+                  className="text-sm transition-colors hover:text-[#f7f8f8]"
+                  style={{ color: '#8a8f98' }}
                 >
                   {VENUE_INFO.email}
                 </a>
@@ -155,7 +158,7 @@ export default function Footer() {
       {/* Copyright bar */}
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-5 sm:px-6 lg:px-8">
-          <p className="text-xs text-text-dim">{t('footer.rights')}</p>
+          <p className="text-xs" style={{ color: '#62666d' }}>{t('footer.rights')}</p>
         </div>
       </div>
     </footer>

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ACTIVITIES, PACKAGES, TIME_SLOTS } from '@/lib/constants';
 import { useI18n } from '@/lib/i18n';
 import Button from '@/components/ui/Button';
@@ -25,7 +24,7 @@ function todayISO() {
 }
 
 function formatCurrency(amount: number) {
-  return `₱${amount.toLocaleString()}`;
+  return `\u20B1${amount.toLocaleString()}`;
 }
 
 function addHour(time: string) {
@@ -52,15 +51,6 @@ const INITIAL_FORM: BookingFormData = {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Motion variants                                                   */
-/* ------------------------------------------------------------------ */
-const stepVariants = {
-  enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
-  center: { x: 0, opacity: 1 },
-  exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
-};
-
-/* ------------------------------------------------------------------ */
 /*  Inner booking component (uses useSearchParams)                    */
 /* ------------------------------------------------------------------ */
 function BookingFlow() {
@@ -68,7 +58,6 @@ function BookingFlow() {
   const { t } = useI18n();
 
   const [step, setStep] = useState(0);
-  const [direction, setDirection] = useState(1);
   const [form, setForm] = useState<BookingFormData>(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -146,12 +135,10 @@ function BookingFlow() {
 
   function goNext() {
     if (!validateStep()) return;
-    setDirection(1);
     setStep((s) => Math.min(s + 1, 3));
   }
 
   function goBack() {
-    setDirection(-1);
     setStep((s) => Math.max(s - 1, 0));
   }
 
@@ -248,24 +235,22 @@ function BookingFlow() {
   if (submitted) {
     return (
       <section className="min-h-[80vh] flex items-center justify-center px-4">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 180, damping: 20 }}
-          className="max-w-md w-full text-center"
-        >
-          {/* Checkmark */}
-          <div className="mx-auto mb-6 w-20 h-20 rounded-full bg-success/10 border-2 border-success flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.25)]">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-success" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 13l4 4L19 7" />
-            </svg>
+        <div className="max-w-md w-full text-center animate-fadeIn">
+          {/* Checkmark with celebration ring */}
+          <div className="relative mx-auto mb-6 w-20 h-20">
+            <div className="absolute inset-0 rounded-full bg-success/5 animate-ping" style={{ animationDuration: '2s' }} />
+            <div className="relative w-20 h-20 rounded-full bg-success/10 border-2 border-success flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.25)]">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-success" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
           </div>
-          <h2 className="text-2xl font-bold mb-2">{t('booking.success')}</h2>
-          <p className="text-text-muted mb-8">{t('booking.successMsg')}</p>
+          <h2 className="text-2xl font-bold mb-2" style={{ letterSpacing: '-0.02em' }}>{t('booking.success')}</h2>
+          <p className="text-[#8a8f98] mb-8">{t('booking.successMsg')}</p>
           <Button onClick={reset} size="lg">
             {t('booking.bookAnother')}
           </Button>
-        </motion.div>
+        </div>
       </section>
     );
   }
@@ -275,7 +260,10 @@ function BookingFlow() {
     <section className="min-h-[80vh] pt-28 pb-16 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-10 gradient-text">
+        <h1
+          className="text-3xl md:text-4xl font-bold text-center mb-10 gradient-text"
+          style={{ letterSpacing: '-0.03em' }}
+        >
           {t('booking.title')}
         </h1>
 
@@ -284,51 +272,39 @@ function BookingFlow() {
           <StepIndicator steps={stepLabels} currentStep={step} />
         </div>
 
-        {/* Step content */}
-        <div className="relative overflow-hidden min-h-[420px]">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={step}
-              custom={direction}
-              variants={stepVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            >
-              {step === 0 && <Step1 form={form} patch={patch} t={t} />}
-              {step === 1 && (
-                <Step2
-                  form={form}
-                  patch={patch}
-                  errors={errors}
-                  selectedActivity={selectedActivity}
-                  selectedPackage={selectedPackage}
-                  isBowling={isBowling}
-                  priceEstimate={priceEstimate}
-                  t={t}
-                />
-              )}
-              {step === 2 && (
-                <Step3
-                  form={form}
-                  patch={patch}
-                  errors={errors}
-                  needsCompany={needsCompany}
-                  t={t}
-                />
-              )}
-              {step === 3 && (
-                <Step4
-                  form={form}
-                  selectedActivity={selectedActivity}
-                  selectedPackage={selectedPackage}
-                  priceEstimate={priceEstimate}
-                  t={t}
-                />
-              )}
-            </motion.div>
-          </AnimatePresence>
+        {/* Step content - simple conditional rendering */}
+        <div className="min-h-[420px]">
+          {step === 0 && <Step1 form={form} patch={patch} t={t} />}
+          {step === 1 && (
+            <Step2
+              form={form}
+              patch={patch}
+              errors={errors}
+              selectedActivity={selectedActivity}
+              selectedPackage={selectedPackage}
+              isBowling={isBowling}
+              priceEstimate={priceEstimate}
+              t={t}
+            />
+          )}
+          {step === 2 && (
+            <Step3
+              form={form}
+              patch={patch}
+              errors={errors}
+              needsCompany={needsCompany}
+              t={t}
+            />
+          )}
+          {step === 3 && (
+            <Step4
+              form={form}
+              selectedActivity={selectedActivity}
+              selectedPackage={selectedPackage}
+              priceEstimate={priceEstimate}
+              t={t}
+            />
+          )}
         </div>
 
         {/* Navigation */}
@@ -352,6 +328,7 @@ function BookingFlow() {
               onClick={handleSubmit}
               size="lg"
               disabled={submitting}
+              className="!px-10 !py-4 !text-base"
             >
               {submitting ? t('booking.submitting') : t('booking.submit')}
             </Button>
@@ -369,7 +346,7 @@ function BookingFlow() {
 }
 
 /* ================================================================== */
-/*  STEP 1 — Choose Type                                              */
+/*  STEP 1 -- Choose Type                                              */
 /* ================================================================== */
 function Step1({
   form,
@@ -432,18 +409,18 @@ function Step1({
             }
             className={[
               'relative flex flex-col items-center text-center gap-4 p-8 rounded-2xl border-2 transition-all duration-300 cursor-pointer',
-              'bg-bg-card hover:-translate-y-1',
+              'bg-bg-card hover:-translate-y-[2px]',
               active
                 ? opt.value === 'activity'
-                  ? 'border-neon-blue shadow-[0_0_32px_rgba(0,212,255,0.3)] bg-neon-blue/5'
-                  : 'border-neon-magenta shadow-[0_0_32px_rgba(255,45,120,0.3)] bg-neon-magenta/5'
-                : 'border-border hover:border-border-light',
+                  ? 'border-neon-blue shadow-[0_0_40px_rgba(0,212,255,0.3),0_0_80px_rgba(0,212,255,0.1)] bg-neon-blue/5'
+                  : 'border-neon-magenta shadow-[0_0_40px_rgba(255,45,120,0.3),0_0_80px_rgba(255,45,120,0.1)] bg-neon-magenta/5'
+                : 'border-border hover:border-border-light hover:shadow-[rgba(0,0,0,0.3)_0px_8px_24px]',
             ].join(' ')}
           >
             {/* Selection dot */}
             <div
               className={[
-                'absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
+                'absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300',
                 active
                   ? opt.value === 'activity'
                     ? 'border-neon-blue'
@@ -452,10 +429,9 @@ function Step1({
               ].join(' ')}
             >
               {active && (
-                <motion.div
-                  layoutId="type-dot"
+                <div
                   className={[
-                    'w-2.5 h-2.5 rounded-full',
+                    'w-2.5 h-2.5 rounded-full transition-all duration-300',
                     opt.value === 'activity' ? 'bg-neon-blue' : 'bg-neon-magenta',
                   ].join(' ')}
                 />
@@ -464,8 +440,8 @@ function Step1({
 
             {opt.icon}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-1">{opt.label}</h3>
-              <p className="text-sm text-text-muted">{opt.desc}</p>
+              <h3 className="text-lg font-semibold text-white mb-1" style={{ letterSpacing: '-0.01em' }}>{opt.label}</h3>
+              <p className="text-sm text-[#8a8f98]">{opt.desc}</p>
             </div>
           </button>
         );
@@ -475,7 +451,7 @@ function Step1({
 }
 
 /* ================================================================== */
-/*  STEP 2 — Details                                                  */
+/*  STEP 2 -- Details                                                  */
 /* ================================================================== */
 function Step2({
   form,
@@ -501,7 +477,7 @@ function Step2({
       {/* Activity / Package selector */}
       {form.type === 'activity' ? (
         <div>
-          <label className="block text-sm font-medium text-text-muted mb-3">
+          <label className="block text-sm font-medium text-[#8a8f98] mb-3">
             {t('booking.selectActivity')}
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -514,17 +490,17 @@ function Step2({
                   onClick={() => patch({ activity_id: act.id })}
                   className={[
                     'flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-200 cursor-pointer',
-                    'hover:-translate-y-0.5',
+                    'hover:-translate-y-[2px]',
                     active
-                      ? 'border-neon-blue bg-neon-blue/10 shadow-[0_0_20px_rgba(0,212,255,0.2)]'
-                      : 'border-border bg-bg-card hover:border-border-light',
+                      ? 'border-neon-blue bg-neon-blue/10 shadow-[0_0_24px_rgba(0,212,255,0.25),0_0_60px_rgba(0,212,255,0.08)]'
+                      : 'border-border bg-bg-card hover:border-border-light hover:shadow-[rgba(0,0,0,0.3)_0px_8px_24px]',
                   ].join(' ')}
                 >
                   <span className="text-2xl">{act.icon}</span>
                   <span className={`text-sm font-medium ${active ? 'text-neon-blue' : 'text-white'}`}>
                     {act.name}
                   </span>
-                  <span className="text-xs text-text-dim">
+                  <span className="text-xs text-[#62666d]">
                     {formatCurrency(act.price)}{t('activities.perHour')}
                   </span>
                 </button>
@@ -537,16 +513,16 @@ function Step2({
         </div>
       ) : (
         <div>
-          <label className="block text-sm font-medium text-text-muted mb-3">
+          <label className="block text-sm font-medium text-[#8a8f98] mb-3">
             {t('booking.selectPackage')}
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {PACKAGES.map((pkg) => {
               const active = form.package_id === pkg.id;
-              const colorMap: Record<string, string> = {
-                'neon-blue': 'border-neon-blue shadow-[0_0_24px_rgba(0,212,255,0.25)] bg-neon-blue/5',
-                'neon-gold': 'border-neon-gold shadow-[0_0_24px_rgba(255,184,0,0.25)] bg-neon-gold/5',
-                'neon-magenta': 'border-neon-magenta shadow-[0_0_24px_rgba(255,45,120,0.25)] bg-neon-magenta/5',
+              const pkgColorMap: Record<string, string> = {
+                'neon-blue': 'border-neon-blue shadow-[0_0_32px_rgba(0,212,255,0.3),0_0_80px_rgba(0,212,255,0.08)] bg-neon-blue/5',
+                'neon-gold': 'border-neon-gold shadow-[0_0_32px_rgba(255,184,0,0.3),0_0_80px_rgba(255,184,0,0.08)] bg-neon-gold/5',
+                'neon-magenta': 'border-neon-magenta shadow-[0_0_32px_rgba(255,45,120,0.3),0_0_80px_rgba(255,45,120,0.08)] bg-neon-magenta/5',
               };
               const textColor: Record<string, string> = {
                 'neon-blue': 'text-neon-blue',
@@ -567,17 +543,17 @@ function Step2({
                   }
                   className={[
                     'flex flex-col items-center text-center gap-2 p-5 rounded-xl border-2 transition-all duration-200 cursor-pointer',
-                    'hover:-translate-y-0.5',
+                    'hover:-translate-y-[2px]',
                     active
-                      ? colorMap[pkg.color] || 'border-neon-blue'
-                      : 'border-border bg-bg-card hover:border-border-light',
+                      ? pkgColorMap[pkg.color] || 'border-neon-blue'
+                      : 'border-border bg-bg-card hover:border-border-light hover:shadow-[rgba(0,0,0,0.3)_0px_8px_24px]',
                   ].join(' ')}
                 >
                   <span className="text-3xl">{pkg.icon}</span>
                   <span className={`text-sm font-bold ${active ? (textColor[pkg.color] || 'text-white') : 'text-white'}`}>
                     {pkg.name}
                   </span>
-                  <span className="text-xs text-text-dim">
+                  <span className="text-xs text-[#62666d]">
                     {formatCurrency(pkg.price)}{t('packages.perPerson')} · {pkg.minPeople}-{pkg.maxPeople} {t('packages.people')}
                   </span>
                 </button>
@@ -604,7 +580,7 @@ function Step2({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-text-muted mb-1.5">
+          <label className="block text-sm font-medium text-[#8a8f98] mb-1.5">
             {t('booking.time')}
           </label>
           <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
@@ -616,10 +592,10 @@ function Step2({
                   type="button"
                   onClick={() => patch({ time: slot, end_time: addHour(slot) })}
                   className={[
-                    'py-2 px-1 rounded-lg text-sm font-medium border transition-all duration-150 cursor-pointer',
+                    'py-2 px-1 rounded-full text-sm font-medium border transition-all duration-150 cursor-pointer',
                     active
                       ? 'border-neon-gold bg-neon-gold/15 text-neon-gold shadow-[0_0_12px_rgba(255,184,0,0.2)]'
-                      : 'border-border bg-bg-card text-text-muted hover:border-border-light hover:text-white',
+                      : 'border-border bg-bg-card text-[#8a8f98] hover:border-border-light hover:text-white',
                   ].join(' ')}
                 >
                   {slot}
@@ -659,25 +635,21 @@ function Step2({
 
       {/* Price estimate */}
       {priceEstimate > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between px-5 py-4 rounded-xl border border-neon-gold/30 bg-neon-gold/5"
-        >
-          <span className="text-sm font-medium text-text-muted">
+        <div className="flex items-center justify-between px-5 py-4 rounded-xl border border-neon-gold/30 bg-neon-gold/5">
+          <span className="text-sm font-medium text-[#8a8f98]">
             {t('booking.estimatedTotal')}
           </span>
           <span className="text-xl font-bold text-neon-gold text-glow-gold">
             {formatCurrency(priceEstimate)}
           </span>
-        </motion.div>
+        </div>
       )}
     </div>
   );
 }
 
 /* ================================================================== */
-/*  STEP 3 — Contact Info                                             */
+/*  STEP 3 -- Contact Info                                             */
 /* ================================================================== */
 function Step3({
   form,
@@ -748,7 +720,7 @@ function Step3({
 
       {/* Special requests */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-text-muted">
+        <label className="text-sm font-medium text-[#8a8f98]">
           {t('booking.requests')}
         </label>
         <textarea
@@ -757,10 +729,10 @@ function Step3({
           value={form.special_requests}
           onChange={(e) => patch({ special_requests: e.target.value })}
           className={[
-            'w-full rounded-xl bg-bg-card border border-border-light px-4 py-3 text-white text-sm',
-            'placeholder:text-text-dim resize-none',
-            'transition-all duration-200',
-            'focus:outline-none focus:ring-2 focus:ring-neon-blue/30 focus:border-neon-blue/50 focus:ring-offset-1 focus:ring-offset-bg',
+            'w-full rounded-xl bg-[#0f1011] border border-[rgba(255,255,255,0.1)] px-4 py-3 text-[#f7f8f8] text-sm',
+            'placeholder:text-[#62666d] resize-none',
+            'transition-colors duration-200',
+            'focus:outline-none focus:border-[#00D4FF]',
           ].join(' ')}
         />
       </div>
@@ -769,7 +741,7 @@ function Step3({
 }
 
 /* ================================================================== */
-/*  STEP 4 — Review & Submit                                          */
+/*  STEP 4 -- Review & Submit                                          */
 /* ================================================================== */
 function Step4({
   form,
@@ -815,24 +787,27 @@ function Step4({
       {/* Booking summary */}
       <Card glow="blue" className="!p-0 overflow-hidden">
         <div className="px-6 py-4 border-b border-border bg-neon-blue/5">
-          <h3 className="text-sm font-semibold text-neon-blue uppercase tracking-wider">
+          <h3
+            className="text-sm font-semibold text-neon-blue uppercase tracking-wider"
+            style={{ letterSpacing: '0.08em' }}
+          >
             {t('booking.summary')}
           </h3>
         </div>
         <div className="px-6 py-4 space-y-3">
           {rows.map((row) => (
             <div key={row.label} className="flex justify-between items-center">
-              <span className="text-sm text-text-muted">{row.label}</span>
+              <span className="text-sm text-[#8a8f98]">{row.label}</span>
               <span className="text-sm font-medium text-white">{row.value}</span>
             </div>
           ))}
           {/* Divider */}
           <div className="border-t border-border my-2" />
           <div className="flex justify-between items-center">
-            <span className="text-sm font-semibold text-text-muted">
+            <span className="text-sm font-semibold text-[#b3b3b3]">
               {t('booking.estimatedTotal')}
             </span>
-            <span className="text-lg font-bold text-neon-gold">
+            <span className="text-2xl font-extrabold text-neon-gold" style={{ letterSpacing: '-0.02em' }}>
               {formatCurrency(priceEstimate)}
             </span>
           </div>
@@ -842,7 +817,10 @@ function Step4({
       {/* Contact summary */}
       <Card className="!p-0 overflow-hidden">
         <div className="px-6 py-4 border-b border-border bg-white/[0.02]">
-          <h3 className="text-sm font-semibold text-text-muted uppercase tracking-wider">
+          <h3
+            className="text-sm font-semibold text-[#8a8f98] uppercase tracking-wider"
+            style={{ letterSpacing: '0.08em' }}
+          >
             {t('booking.step3')}
           </h3>
         </div>
@@ -865,7 +843,7 @@ function Step4({
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between items-start gap-4">
-      <span className="text-sm text-text-muted shrink-0">{label}</span>
+      <span className="text-sm text-[#8a8f98] shrink-0">{label}</span>
       <span className="text-sm font-medium text-white text-right">{value}</span>
     </div>
   );

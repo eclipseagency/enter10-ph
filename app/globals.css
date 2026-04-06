@@ -8,8 +8,9 @@
   --color-neon-magenta: #FF2D78;
   --color-neon-gold: #FFB800;
   --color-text-primary: #FFFFFF;
-  --color-text-muted: #9CA3AF;
-  --color-text-dim: #6B7280;
+  --color-text-body: #b3b3b3;
+  --color-text-muted: #8a8f98;
+  --color-text-dim: #62666d;
   --color-border: #262626;
   --color-border-light: #333333;
   --color-success: #22C55E;
@@ -26,6 +27,25 @@ body {
   background: #0A0A0A;
   color: #FFFFFF;
   font-family: var(--font-sans);
+}
+
+/* Headline letter-spacing utilities */
+.heading-display {
+  letter-spacing: -0.03em;
+}
+.heading-section {
+  letter-spacing: -0.02em;
+}
+
+/* Text hierarchy */
+.text-body {
+  color: #b3b3b3;
+}
+.text-muted-alt {
+  color: #8a8f98;
+}
+.text-dim-alt {
+  color: #62666d;
 }
 
 /* Neon glow utilities */
@@ -47,8 +67,12 @@ body {
 
 /* Glass morphism - no backdrop-filter to avoid GPU compositing bugs */
 .glass {
-  background: rgba(20, 20, 20, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 16, 17, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 8px 24px;
+}
+.glass:hover {
+  border-color: rgba(255, 255, 255, 0.12);
 }
 .glass-light {
   background: rgba(30, 30, 30, 0.9);
@@ -61,6 +85,12 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  letter-spacing: -0.03em;
+}
+
+/* Card shadow */
+.card-shadow {
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 0px 0px 1px, rgba(0, 0, 0, 0.3) 0px 8px 8px;
 }
 
 /* Smooth scrolling disabled - causes GPU render issues with dark themes */

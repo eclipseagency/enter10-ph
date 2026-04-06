@@ -40,7 +40,8 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="ml-2 rounded-lg bg-neon-gold px-4 py-2 text-sm font-semibold text-black transition-all hover:brightness-110 glow-gold"
+                  className="ml-2 rounded-full bg-neon-gold px-5 py-2 font-bold text-black transition-all hover:brightness-110 glow-gold uppercase"
+                  style={{ fontSize: '13px', letterSpacing: '1px' }}
                 >
                   {t(NAV_I18N_KEYS[link.href])}
                 </Link>
@@ -51,11 +52,12 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                className={`relative rounded-lg px-3 py-2 font-medium ${
                   isActive
                     ? 'text-neon-blue'
                     : 'text-text-muted hover:text-white'
                 }`}
+                style={{ fontSize: '14px', transition: 'color 250ms' }}
               >
                 {t(NAV_I18N_KEYS[link.href])}
                 {isActive && (
@@ -115,7 +117,8 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="mt-2 rounded-lg bg-neon-gold px-4 py-2.5 text-center text-sm font-semibold text-black transition-all hover:brightness-110"
+                    className="mt-2 rounded-full bg-neon-gold px-4 py-2.5 text-center font-bold text-black transition-all hover:brightness-110 uppercase"
+                    style={{ fontSize: '13px', letterSpacing: '1px' }}
                   >
                     {t(NAV_I18N_KEYS[link.href])}
                   </Link>
@@ -127,11 +130,12 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+                  className={`rounded-lg px-4 py-2.5 font-medium ${
                     isActive
                       ? 'text-neon-blue bg-white/5'
                       : 'text-text-muted hover:text-white hover:bg-white/5'
                   }`}
+                  style={{ fontSize: '14px', transition: 'color 250ms' }}
                 >
                   {t(NAV_I18N_KEYS[link.href])}
                 </Link>

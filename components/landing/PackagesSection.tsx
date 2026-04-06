@@ -18,10 +18,10 @@ export default function PackagesSection() {
     <section className="relative py-20 sm:py-28 px-4 sm:px-6" id="packages" style={{ background: 'rgba(20,20,20,0.3)' }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text inline-block mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text inline-block mb-4" style={{ letterSpacing: '-0.03em' }}>
             {t('packages.title')}
           </h2>
-          <p className="text-[#9CA3AF] text-lg max-w-xl mx-auto">
+          <p className="text-lg max-w-xl mx-auto" style={{ color: '#b3b3b3' }}>
             {t('packages.subtitle')}
           </p>
         </div>
@@ -35,34 +35,34 @@ export default function PackagesSection() {
               <div
                 key={pkg.id}
                 className="glass rounded-2xl flex flex-col overflow-hidden group transition-all duration-300 hover:-translate-y-1"
-                style={{ borderTop: `4px solid ${colors.border}` }}
+                style={{ borderTop: `4px solid ${colors.border}`, background: `linear-gradient(180deg, ${colors.shadow} 0%, transparent 40%)` }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 0 30px ${colors.shadow}`; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
               >
                 <div className="p-6 flex flex-col flex-1">
                   <div className="text-4xl mb-3">{pkg.icon}</div>
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-xl font-bold text-white mb-2" style={{ letterSpacing: '-0.02em' }}>
                     {locale === 'fil' ? pkg.nameFil : pkg.name}
                   </h3>
-                  <p className="text-[#9CA3AF] text-sm leading-relaxed mb-5">
+                  <p className="text-sm leading-relaxed mb-5" style={{ color: '#b3b3b3' }}>
                     {locale === 'fil' ? pkg.descriptionFil : pkg.description}
                   </p>
                   <div className="flex items-baseline gap-1 mb-4">
-                    <span className="text-3xl font-extrabold text-white">&#8369;{pkg.price}</span>
-                    <span className="text-[#9CA3AF] text-sm">{t('packages.perPerson')}</span>
+                    <span className="text-4xl font-extrabold text-white" style={{ letterSpacing: '-0.02em' }}>&#8369;{pkg.price}</span>
+                    <span className="text-sm" style={{ color: '#8a8f98' }}>{t('packages.perPerson')}</span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-[#9CA3AF] mb-5">
+                  <div className="flex items-center gap-4 text-sm mb-5" style={{ color: '#8a8f98' }}>
                     <span>{pkg.minPeople}&ndash;{pkg.maxPeople} {t('packages.people')}</span>
                     <span className="w-px h-4" style={{ background: '#262626' }} />
                     <span>{durationHrs} {t('packages.hours')}</span>
                   </div>
                   <div className="mb-6 flex-1">
-                    <p className="text-xs uppercase tracking-wider font-semibold mb-3" style={{ color: '#6B7280' }}>
+                    <p className="text-xs uppercase tracking-wider font-semibold mb-3" style={{ color: '#62666d' }}>
                       {t('packages.includes')}
                     </p>
-                    <ul className="space-y-2">
+                    <ul className="space-y-2.5">
                       {(locale === 'fil' ? pkg.includesFil : pkg.includes).map((item, j) => (
-                        <li key={j} className="flex items-start gap-2 text-sm" style={{ color: '#9CA3AF' }}>
+                        <li key={j} className="flex items-start gap-2 text-sm" style={{ color: '#b3b3b3' }}>
                           <svg className="w-4 h-4 mt-0.5 shrink-0" style={{ color: '#22C55E' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                           </svg>

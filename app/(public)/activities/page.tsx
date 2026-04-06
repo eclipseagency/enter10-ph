@@ -25,10 +25,13 @@ export default function ActivitiesPage() {
       <div className="relative z-10 max-w-6xl mx-auto">
         {/* Page header */}
         <div className="text-center mb-16 animate-fadeIn">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold gradient-text inline-block mb-5">
+          <h1
+            className="text-4xl sm:text-5xl md:text-6xl font-extrabold gradient-text inline-block mb-5"
+            style={{ letterSpacing: '-0.03em' }}
+          >
             {t('activities.page.title')}
           </h1>
-          <p className="text-lg sm:text-xl text-[#9CA3AF] max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-[#b3b3b3] max-w-2xl mx-auto">
             {t('activities.page.subtitle')}
           </p>
         </div>
@@ -38,7 +41,7 @@ export default function ActivitiesPage() {
           {ACTIVITIES.map((activity) => (
             <div
               key={activity.id}
-              className="glass rounded-2xl overflow-hidden flex flex-col group hover:-translate-y-1 transition-all duration-300"
+              className="glass rounded-2xl overflow-hidden flex flex-col group hover:-translate-y-[2px] transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:shadow-[rgba(0,0,0,0.3)_0px_8px_24px]"
             >
               {/* Photo */}
               <div className="relative h-48 sm:h-56 overflow-hidden">
@@ -57,28 +60,35 @@ export default function ActivitiesPage() {
 
               {/* Content */}
               <div className="p-6 flex flex-col flex-1">
-                <h2 className="text-2xl font-bold text-white mb-3">
+                <h2
+                  className="text-2xl font-bold text-white mb-3"
+                  style={{ letterSpacing: '-0.02em' }}
+                >
                   {locale === 'fil' ? activity.nameFil : activity.name}
                 </h2>
 
-                <p className="text-[#9CA3AF] text-sm leading-relaxed mb-5 flex-1">
+                <p className="text-[#b3b3b3] text-sm leading-relaxed mb-5 flex-1">
                   {locale === 'fil' ? activity.descriptionFil : activity.description}
                 </p>
 
                 {/* Price and capacity */}
                 <div className="flex items-center gap-3 mb-5">
                   {activity.price > 0 ? (
-                    <span className="inline-block text-sm font-semibold px-3 py-1.5 rounded-full"
-                      style={{ background: 'rgba(0,212,255,0.1)', color: '#00D4FF' }}>
+                    <span
+                      className="inline-block text-sm font-semibold px-4 py-1.5 rounded-full"
+                      style={{ background: 'rgba(0,212,255,0.1)', color: '#00D4FF' }}
+                    >
                       &#8369;{activity.price}{t('activities.perHour')}
                     </span>
                   ) : (
-                    <span className="inline-block text-sm font-semibold px-3 py-1.5 rounded-full"
-                      style={{ background: 'rgba(255,184,0,0.1)', color: '#FFB800' }}>
+                    <span
+                      className="inline-block text-sm font-semibold px-4 py-1.5 rounded-full"
+                      style={{ background: 'rgba(255,184,0,0.1)', color: '#FFB800' }}
+                    >
                       {t('activities.free')}
                     </span>
                   )}
-                  <span className="text-[#6B7280] text-xs">
+                  <span className="text-[#62666d] text-xs">
                     {activity.capacity === 1
                       ? '1 player'
                       : `Up to ${activity.capacity} players`}

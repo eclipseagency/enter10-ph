@@ -13,10 +13,10 @@ export default function ActivitiesSection() {
     <section className="relative py-20 sm:py-28 px-4 sm:px-6" id="activities">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text inline-block mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text inline-block mb-4" style={{ letterSpacing: '-0.03em' }}>
             {t('activities.title')}
           </h2>
-          <p className="text-[#9CA3AF] text-lg max-w-xl mx-auto">
+          <p className="text-lg max-w-xl mx-auto" style={{ color: '#b3b3b3' }}>
             {t('activities.subtitle')}
           </p>
         </div>
@@ -25,7 +25,7 @@ export default function ActivitiesSection() {
           {ACTIVITIES.map((activity) => (
             <div
               key={activity.id}
-              className="glass rounded-2xl overflow-hidden flex flex-col hover:-translate-y-1 transition-all duration-300 group"
+              className="glass rounded-2xl overflow-hidden flex flex-col hover:-translate-y-1 transition-all duration-300 group hover:border-white/10 hover:shadow-[rgba(0,0,0,0.3)_0px_8px_24px]"
             >
               {/* Photo */}
               <div className="relative h-48 w-full overflow-hidden">
@@ -36,15 +36,15 @@ export default function ActivitiesSection() {
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#141414] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                 <div className="absolute bottom-3 left-4 text-3xl">{activity.icon}</div>
               </div>
 
               <div className="p-5 flex flex-col flex-1">
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="text-xl font-semibold text-white mb-2" style={{ letterSpacing: '-0.02em' }}>
                   {locale === 'fil' ? activity.nameFil : activity.name}
                 </h3>
-                <p className="text-[#9CA3AF] text-sm leading-relaxed mb-4 flex-1">
+                <p className="text-sm leading-relaxed mb-4 flex-1" style={{ color: '#b3b3b3' }}>
                   {locale === 'fil' ? activity.descriptionFil : activity.description}
                 </p>
                 <div className="mb-4">
