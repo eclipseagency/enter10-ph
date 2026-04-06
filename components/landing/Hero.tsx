@@ -9,13 +9,21 @@ export default function Hero() {
 
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center">
-      {/* Venue photo background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: 'url(/images/hero.jpg)' }}
-      />
-      {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-black/60" />
+      {/* Video background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+        poster="/images/hero.jpg"
+      >
+        <source src="/hero-video.mp4" type="video/mp4" />
+      </video>
+
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/55" />
+
       {/* Neon gradient overlay */}
       <div
         className="absolute inset-0"
@@ -34,7 +42,7 @@ export default function Hero() {
           {t('hero.tagline')}
         </h1>
 
-        <p className="text-lg sm:text-xl text-[#9CA3AF] max-w-2xl mx-auto mb-10">
+        <p className="text-lg sm:text-xl text-[#d1d5db] max-w-2xl mx-auto mb-10">
           {t('hero.subtitle')}
         </p>
 
