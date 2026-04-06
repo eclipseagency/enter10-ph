@@ -1,35 +1,23 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { ACTIVITIES } from '@/lib/constants';
 import { useI18n } from '@/lib/i18n';
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: i * 0.1, ease: 'easeOut' as const },
-  }),
-};
-
 export default function ActivitiesSection() {
   const { t, locale } = useI18n();
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
     <section className="relative py-20 sm:py-28 px-4 sm:px-6" id="activities">
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
         <motion.div
-          ref={ref}
           className="text-center mb-14"
           initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text inline-block mb-4">
@@ -46,10 +34,10 @@ export default function ActivitiesSection() {
             <motion.div
               key={activity.id}
               className="glass rounded-2xl p-6 flex flex-col hover:bg-bg-card-hover transition-colors duration-300 group"
-              custom={i}
-              initial="hidden"
-              animate={inView ? 'visible' : 'hidden'}
-              variants={fadeUp}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.5, delay: i * 0.1, ease: 'easeOut' }}
             >
               {/* Icon */}
               <div className="text-5xl mb-4">{activity.icon}</div>

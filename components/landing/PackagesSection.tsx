@@ -1,53 +1,38 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { PACKAGES } from '@/lib/constants';
 import { useI18n } from '@/lib/i18n';
 
-const colorMap: Record<string, { border: string; glow: string; bg: string }> = {
+const colorMap: Record<string, { border: string; glow: string }> = {
   'neon-blue': {
-    border: 'border-t-neon-blue',
+    border: 'border-t-[#00D4FF]',
     glow: 'group-hover:shadow-[0_0_30px_rgba(0,212,255,0.15)]',
-    bg: 'bg-neon-blue/10',
   },
   'neon-gold': {
-    border: 'border-t-neon-gold',
+    border: 'border-t-[#FFB800]',
     glow: 'group-hover:shadow-[0_0_30px_rgba(255,184,0,0.15)]',
-    bg: 'bg-neon-gold/10',
   },
   'neon-magenta': {
-    border: 'border-t-neon-magenta',
+    border: 'border-t-[#FF2D78]',
     glow: 'group-hover:shadow-[0_0_30px_rgba(255,45,120,0.15)]',
-    bg: 'bg-neon-magenta/10',
   },
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: i * 0.15, ease: 'easeOut' as const },
-  }),
 };
 
 export default function PackagesSection() {
   const { t, locale } = useI18n();
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section className="relative py-20 sm:py-28 px-4 sm:px-6 bg-bg-card/30" id="packages">
+    <section className="relative py-20 sm:py-28 px-4 sm:px-6" id="packages" style={{ background: 'rgba(20,20,20,0.3)' }}>
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
         <motion.div
-          ref={ref}
           className="text-center mb-14"
           initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text inline-block mb-4">
@@ -68,10 +53,10 @@ export default function PackagesSection() {
               <motion.div
                 key={pkg.id}
                 className={`glass rounded-2xl border-t-4 ${colors.border} flex flex-col overflow-hidden group transition-shadow duration-300 ${colors.glow}`}
-                custom={i}
-                initial="hidden"
-                animate={inView ? 'visible' : 'hidden'}
-                variants={fadeUp}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.5, delay: i * 0.15, ease: 'easeOut' }}
               >
                 <div className="p-6 flex flex-col flex-1">
                   {/* Icon & Name */}
@@ -94,20 +79,20 @@ export default function PackagesSection() {
                   {/* Meta: people & duration */}
                   <div className="flex items-center gap-4 text-sm text-text-muted mb-5">
                     <span>{pkg.minPeople}&ndash;{pkg.maxPeople} {t('packages.people')}</span>
-                    <span className="w-px h-4 bg-border" />
+                    <span className="w-px h-4 bg-[#262626]" />
                     <span>{durationHrs} {t('packages.hours')}</span>
                   </div>
 
                   {/* Includes */}
                   <div className="mb-6 flex-1">
-                    <p className="text-xs uppercase tracking-wider text-text-dim font-semibold mb-3">
+                    <p className="text-xs uppercase tracking-wider text-[#6B7280] font-semibold mb-3">
                       {t('packages.includes')}
                     </p>
                     <ul className="space-y-2">
                       {(locale === 'fil' ? pkg.includesFil : pkg.includes).map((item, j) => (
-                        <li key={j} className="flex items-start gap-2 text-sm text-text-muted">
+                        <li key={j} className="flex items-start gap-2 text-sm text-[#9CA3AF]">
                           <svg
-                            className="w-4 h-4 text-success mt-0.5 shrink-0"
+                            className="w-4 h-4 text-[#22C55E] mt-0.5 shrink-0"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -122,7 +107,7 @@ export default function PackagesSection() {
                   </div>
 
                   {/* CTA */}
-                  <Link href="/booking">
+                  <Link href={`/booking?package=${pkg.type}`}>
                     <Button variant="primary" size="md" fullWidth>
                       {t('packages.bookPackage')}
                     </Button>
