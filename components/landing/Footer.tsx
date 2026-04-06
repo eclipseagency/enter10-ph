@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { NAV_LINKS, VENUE_INFO, OPERATING_HOURS } from '@/lib/constants';
 import { useI18n } from '@/lib/i18n';
 
@@ -48,9 +49,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand column */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <span className="gradient-text text-xl font-bold tracking-tight">
-              Enter10
-            </span>
+            <Image src="/images/logo.png" alt="Enter10" width={56} height={56} className="h-12 w-auto" />
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-text-muted">
               {t('footer.tagline')}
             </p>

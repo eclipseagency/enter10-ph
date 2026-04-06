@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { NAV_LINKS } from '@/lib/constants';
 import { useI18n } from '@/lib/i18n';
@@ -25,9 +26,7 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="shrink-0">
-          <span className="gradient-text text-xl font-bold tracking-tight">
-            Enter10
-          </span>
+          <Image src="/images/logo.png" alt="Enter10" width={48} height={48} className="h-10 w-auto" />
         </Link>
 
         {/* Desktop nav links */}
