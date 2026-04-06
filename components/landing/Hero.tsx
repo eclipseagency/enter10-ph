@@ -8,7 +8,7 @@ export default function Hero() {
   const { t } = useI18n();
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative w-full min-h-screen flex items-center justify-center">
       {/* Dark gradient background */}
       <div
         className="absolute inset-0"
