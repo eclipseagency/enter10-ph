@@ -75,3 +75,12 @@ html {
 /* Hide scrollbar for mobile nav */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}

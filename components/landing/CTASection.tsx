@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { useI18n } from '@/lib/i18n';
@@ -23,58 +22,28 @@ export default function CTASection() {
         }}
       />
 
-      {/* Neon glow decorations */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full pointer-events-none"
+      {/* Pulsing neon glow */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full pointer-events-none animate-pulse"
         style={{
           background: 'radial-gradient(ellipse, rgba(0,212,255,0.08) 0%, transparent 70%)',
           filter: 'blur(60px)',
-        }}
-        animate={{
-          scale: [1, 1.15, 1],
-          opacity: [0.6, 1, 0.6],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: 'easeInOut',
         }}
       />
 
       {/* Content */}
       <div className="relative z-10 max-w-3xl mx-auto text-center">
-        <motion.h2
-          className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-glow-blue mb-6"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.6 }}
-        >
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-glow-blue mb-6">
           {t('cta.title')}
-        </motion.h2>
-
-        <motion.p
-          className="text-lg text-[#9CA3AF] max-w-xl mx-auto mb-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-        >
+        </h2>
+        <p className="text-lg max-w-xl mx-auto mb-10" style={{ color: '#9CA3AF' }}>
           {t('cta.subtitle')}
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <Link href="/booking">
-            <Button variant="primary" size="lg">
-              {t('cta.button')}
-            </Button>
-          </Link>
-        </motion.div>
+        </p>
+        <Link href="/booking">
+          <Button variant="primary" size="lg">
+            {t('cta.button')}
+          </Button>
+        </Link>
       </div>
     </section>
   );
