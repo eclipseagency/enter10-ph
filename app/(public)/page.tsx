@@ -12,12 +12,14 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <>
+    <div>
       <Hero />
-      <ActivitiesSection />
-      <PackagesSection />
-      <GallerySection />
-      <CTASection />
-    </>
+      <div className="relative z-10" style={{ backgroundColor: '#0A0A0A' }}>
+        <ActivitiesSection />
+        <PackagesSection />
+        <GallerySection />
+        <CTASection />
+      </div>
+    </div>
   );
 }
