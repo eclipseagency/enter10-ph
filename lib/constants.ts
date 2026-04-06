@@ -1,0 +1,139 @@
+export const PH_BRANCH_ID = 'b1000000-0000-0000-0000-000000000008';
+
+export const ACTIVITIES = [
+  {
+    id: 'a1000000-0000-0000-0000-000000000001',
+    name: 'Bowling',
+    nameFil: 'Bowling',
+    description: 'Experience premium bowling lanes with neon-lit atmosphere and state-of-the-art scoring systems.',
+    descriptionFil: 'Maranasan ang premium na bowling lanes na may neon na ilaw at modernong scoring systems.',
+    icon: '🎳',
+    price: 100,
+    capacity: 6,
+    image: '/images/bowling.jpg',
+  },
+  {
+    id: 'a1000000-0000-0000-0000-000000000002',
+    name: 'Billiards',
+    nameFil: 'Billiards',
+    description: 'Professional-grade billiard tables in a sleek, lounge-style setting.',
+    descriptionFil: 'Mga professional-grade na billiard tables sa isang makinis na lounge-style na setting.',
+    icon: '🎱',
+    price: 70,
+    capacity: 4,
+    image: '/images/billiards.jpg',
+  },
+  {
+    id: 'a1000000-0000-0000-0000-000000000003',
+    name: 'Arcade Games',
+    nameFil: 'Arcade Games',
+    description: 'A curated collection of arcade machines from racing to rhythm games.',
+    descriptionFil: 'Isang koleksyon ng mga arcade machines mula sa racing hanggang rhythm games.',
+    icon: '🕹️',
+    price: 40,
+    capacity: 1,
+    image: '/images/arcade.jpg',
+  },
+  {
+    id: 'a1000000-0000-0000-0000-000000000008',
+    name: 'Air Hockey',
+    nameFil: 'Air Hockey',
+    description: 'Fast-paced air hockey tables for thrilling head-to-head matchups.',
+    descriptionFil: 'Mabilis na air hockey tables para sa mga nakakaexciting na laban.',
+    icon: '🏒',
+    price: 50,
+    capacity: 2,
+    image: '/images/airhockey.jpg',
+  },
+  {
+    id: 'a1000000-0000-0000-0000-000000000010',
+    name: 'Food & Coffee Lounge',
+    nameFil: 'Food & Coffee Lounge',
+    description: 'Relax with craft drinks, bar bites, and lounge seating between rounds.',
+    descriptionFil: 'Mag-relax sa craft drinks, bar bites, at lounge seating sa pagitan ng mga laro.',
+    icon: '☕',
+    price: 0,
+    capacity: 50,
+    image: '/images/lounge.jpg',
+  },
+];
+
+export const PACKAGES = [
+  {
+    id: 'c1000000-0000-0000-0000-000000000001',
+    name: 'School Fun Day',
+    nameFil: 'School Fun Day',
+    type: 'school' as const,
+    description: 'The ultimate field trip experience. 3 hours of bowling, arcade tokens, and a meal for every student.',
+    descriptionFil: 'Ang pinakamahusay na field trip experience. 3 oras ng bowling, arcade tokens, at pagkain para sa bawat estudyante.',
+    minPeople: 20,
+    maxPeople: 100,
+    price: 50,
+    duration: 180,
+    includes: ['3 hours bowling', 'Arcade tokens per student', 'Meal per student', 'Dedicated event host'],
+    includesFil: ['3 oras ng bowling', 'Arcade tokens bawat estudyante', 'Pagkain bawat estudyante', 'Dedicated event host'],
+    icon: '🎓',
+    color: 'neon-blue',
+  },
+  {
+    id: 'c1000000-0000-0000-0000-000000000002',
+    name: 'Corporate Team Building',
+    nameFil: 'Corporate Team Building',
+    type: 'corporate' as const,
+    description: 'Boost team morale with 4 hours of all activities, private room, and full catering.',
+    descriptionFil: 'Palakasin ang team morale sa 4 na oras ng lahat ng activities, private room, at full catering.',
+    minPeople: 10,
+    maxPeople: 50,
+    price: 120,
+    duration: 240,
+    includes: ['4 hours all activities', 'Private room', 'Full catering', 'Team building facilitator'],
+    includesFil: ['4 na oras lahat ng activities', 'Private room', 'Full catering', 'Team building facilitator'],
+    icon: '💼',
+    color: 'neon-gold',
+  },
+  {
+    id: 'c1000000-0000-0000-0000-000000000003',
+    name: 'Birthday Bash',
+    nameFil: 'Birthday Bash',
+    type: 'birthday' as const,
+    description: 'Celebrate in style with 3 hours of bowling, cake, decorations, and a party host.',
+    descriptionFil: 'Magdiwang nang may estilo sa 3 oras ng bowling, cake, dekorasyon, at party host.',
+    minPeople: 5,
+    maxPeople: 30,
+    price: 80,
+    duration: 180,
+    includes: ['3 hours bowling', 'Birthday cake', 'Decorations & setup', 'Dedicated party host'],
+    includesFil: ['3 oras ng bowling', 'Birthday cake', 'Dekorasyon at setup', 'Dedicated party host'],
+    icon: '🎂',
+    color: 'neon-magenta',
+  },
+];
+
+export const OPERATING_HOURS = {
+  weekday: { open: '10:00', close: '00:00', label: 'Mon - Thu' },
+  weekend: { open: '10:00', close: '02:00', label: 'Fri - Sun' },
+};
+
+export const TIME_SLOTS = [
+  '10:00', '11:00', '12:00', '13:00', '14:00', '15:00',
+  '16:00', '17:00', '18:00', '19:00', '20:00', '21:00',
+  '22:00', '23:00',
+];
+
+export const VENUE_INFO = {
+  name: 'Enter10 Philippines',
+  address: 'Venice Grand Canal Mall, McKinley Hill, Taguig, Metro Manila, Philippines',
+  phone: '+63-2-000-0008',
+  email: 'book@enter-ten.com',
+  lat: 14.5311,
+  lng: 121.0504,
+  mapsUrl: 'https://maps.google.com/?q=14.5311,121.0504',
+};
+
+export const NAV_LINKS = [
+  { href: '/', label: 'Home', labelFil: 'Home' },
+  { href: '/activities', label: 'Activities', labelFil: 'Mga Aktibidad' },
+  { href: '/packages', label: 'Packages', labelFil: 'Mga Package' },
+  { href: '/booking', label: 'Book Now', labelFil: 'Mag-Book' },
+  { href: '/contact', label: 'Contact', labelFil: 'Kontak' },
+];
