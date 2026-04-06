@@ -121,13 +121,16 @@ export const TIME_SLOTS = [
 ];
 
 export const VENUE_INFO = {
-  name: 'Enter10 Philippines',
-  address: 'Venice Grand Canal Mall, McKinley Hill, Taguig, Metro Manila, Philippines',
+  name: 'Enter 10 Bowling',
+  address: 'Venezia Dr, McKinley Hill, Taguig, Metro Manila, Philippines',
   phone: '+63-2-000-0008',
   email: 'book@enter-ten.com',
   lat: 14.5311,
   lng: 121.0504,
-  mapsUrl: 'https://maps.google.com/?q=14.5311,121.0504',
+  mapsUrl: 'https://www.google.com/maps/search/ENTER+10+BOWLING+McKinley+Hill+Taguig',
+  mapsEmbed: 'https://www.google.com/maps?q=ENTER+10+BOWLING+McKinley+Hill+Taguig&output=embed',
+  googleRating: '4.6',
+  googleReviews: '324',
 };
 
 export const NAV_LINKS = [
