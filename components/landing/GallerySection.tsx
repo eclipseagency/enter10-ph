@@ -1,14 +1,15 @@
 'use client';
 
+import Image from 'next/image';
 import { useI18n } from '@/lib/i18n';
 
-const placeholders = [
-  { color1: 'rgba(0,212,255,0.2)', color2: 'transparent', label: 'Bowling Lanes' },
-  { color1: 'rgba(255,45,120,0.2)', color2: 'transparent', label: 'Arcade Zone' },
-  { color1: 'rgba(255,184,0,0.2)', color2: 'transparent', label: 'Billiards Lounge' },
-  { color1: 'rgba(255,45,120,0.15)', color2: 'rgba(0,212,255,0.1)', label: 'Night Vibes' },
-  { color1: 'rgba(0,212,255,0.15)', color2: 'rgba(255,184,0,0.1)', label: 'Air Hockey' },
-  { color1: 'rgba(255,184,0,0.15)', color2: 'rgba(255,45,120,0.1)', label: 'Food & Drinks' },
+const galleryImages = [
+  { src: '/images/bowling.jpg', label: 'Bowling Lanes' },
+  { src: '/images/lounge.jpg', label: 'Craft Cocktails' },
+  { src: '/images/billiards.jpg', label: 'Billiards Lounge' },
+  { src: '/images/vip.jpg', label: 'VIP Room' },
+  { src: '/images/venue.jpg', label: 'Enter10 Venue' },
+  { src: '/images/food.jpg', label: 'Food & Bites' },
 ];
 
 export default function GallerySection() {
@@ -27,22 +28,21 @@ export default function GallerySection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {placeholders.map((item, i) => (
+          {galleryImages.map((item, i) => (
             <div
               key={i}
               className="group relative rounded-2xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.02]"
               style={{ aspectRatio: '4/3' }}
             >
-              <div
-                className="absolute inset-0"
-                style={{ background: `linear-gradient(135deg, ${item.color1}, ${item.color2}), #141414` }}
+              <Image
+                src={item.src}
+                alt={item.label}
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
-              <div className="absolute inset-0 opacity-5" style={{
-                backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)',
-                backgroundSize: '24px 24px',
-              }} />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
-                <span className="text-white text-sm font-medium tracking-wide">
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/50 transition-all duration-300 flex items-end p-4">
+                <span className="text-white text-sm font-medium tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
                   {item.label}
                 </span>
               </div>

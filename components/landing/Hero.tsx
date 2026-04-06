@@ -9,26 +9,24 @@ export default function Hero() {
 
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center">
-      {/* Dark gradient background */}
+      {/* Venue photo background */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: 'url(/images/hero.jpg)' }}
+      />
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-black/60" />
+      {/* Neon gradient overlay */}
       <div
         className="absolute inset-0"
         style={{
           background: [
-            'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,212,255,0.08) 0%, transparent 60%)',
-            'radial-gradient(ellipse 60% 50% at 20% 80%, rgba(255,45,120,0.06) 0%, transparent 50%)',
-            'radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,184,0,0.04) 0%, transparent 50%)',
-            '#0A0A0A',
+            'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,212,255,0.1) 0%, transparent 60%)',
+            'radial-gradient(ellipse 60% 50% at 20% 80%, rgba(255,45,120,0.08) 0%, transparent 50%)',
+            'radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,184,0,0.06) 0%, transparent 50%)',
           ].join(', '),
         }}
       />
-
-      {/* Animated neon orbs (CSS only) */}
-      <div className="absolute left-[15%] top-[20%] w-[300px] h-[300px] rounded-full pointer-events-none animate-pulse opacity-60"
-        style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.12) 0%, transparent 70%)', filter: 'blur(40px)' }} />
-      <div className="absolute left-[75%] top-[60%] w-[250px] h-[250px] rounded-full pointer-events-none animate-pulse opacity-50"
-        style={{ background: 'radial-gradient(circle, rgba(255,45,120,0.10) 0%, transparent 70%)', filter: 'blur(40px)', animationDelay: '2s' }} />
-      <div className="absolute left-[50%] top-[80%] w-[200px] h-[200px] rounded-full pointer-events-none animate-pulse opacity-40"
-        style={{ background: 'radial-gradient(circle, rgba(255,184,0,0.08) 0%, transparent 70%)', filter: 'blur(40px)', animationDelay: '4s' }} />
 
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center animate-fadeIn">

@@ -32,7 +32,7 @@ export const ACTIVITIES = [
     icon: '🕹️',
     price: 40,
     capacity: 1,
-    image: '/images/arcade.jpg',
+    image: '/images/dining.jpg',
   },
   {
     id: 'a1000000-0000-0000-0000-000000000008',
@@ -43,7 +43,7 @@ export const ACTIVITIES = [
     icon: '🏒',
     price: 50,
     capacity: 2,
-    image: '/images/airhockey.jpg',
+    image: '/images/archery.jpg',
   },
   {
     id: 'a1000000-0000-0000-0000-000000000010',
@@ -54,7 +54,7 @@ export const ACTIVITIES = [
     icon: '☕',
     price: 0,
     capacity: 50,
-    image: '/images/lounge.jpg',
+    image: '/images/food.jpg',
   },
 ];
 
