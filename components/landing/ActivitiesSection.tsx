@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
-import { ACTIVITIES, SERVICE_CHARGE_PERCENT } from '@/lib/constants';
+import { ACTIVITIES } from '@/lib/constants';
 import { useI18n } from '@/lib/i18n';
 
 export default function ActivitiesSection() {
@@ -48,12 +48,19 @@ export default function ActivitiesSection() {
                   {locale === 'fil' ? activity.descriptionFil : activity.description}
                 </p>
                 <div className="mb-4">
-                  <span className="inline-block text-sm font-semibold px-3 py-1 rounded-full"
-                    style={{ background: 'rgba(0,212,255,0.1)', color: '#00D4FF' }}>
-                    &#8369;{activity.price.toLocaleString()} {locale === 'fil' ? activity.priceLabelFil : activity.priceLabel}
-                  </span>
+                  {activity.price > 0 ? (
+                    <span className="inline-block text-sm font-semibold px-3 py-1 rounded-full"
+                      style={{ background: 'rgba(0,212,255,0.1)', color: '#00D4FF' }}>
+                      &#8369;{activity.price}{t('activities.perHour')}
+                    </span>
+                  ) : (
+                    <span className="inline-block text-sm font-semibold px-3 py-1 rounded-full"
+                      style={{ background: 'rgba(255,184,0,0.1)', color: '#FFB800' }}>
+                      {t('activities.free')}
+                    </span>
+                  )}
                 </div>
-                <Link href="/activities" className="mt-auto">
+                <Link href="/booking" className="mt-auto">
                   <Button variant="secondary" size="sm" fullWidth>
                     {t('activities.bookNow')}
                   </Button>
@@ -62,11 +69,6 @@ export default function ActivitiesSection() {
             </div>
           ))}
         </div>
-
-        {/* Service charge note */}
-        <p className="text-center text-xs text-[#8a8f98] mt-8">
-          {t('activities.serviceCharge')}
-        </p>
       </div>
     </section>
   );

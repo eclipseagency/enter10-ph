@@ -103,18 +103,16 @@ function BookingFlow() {
 
   const priceEstimate = useMemo(() => {
     if (form.type === 'activity' && selectedActivity) {
-      /* Bowling: per-head pricing */
       if (isBowling) {
-        return selectedActivity.price * form.num_people;
+        return selectedActivity.price * form.num_lanes;
       }
-      /* All other activities: use base (starting) price */
-      return selectedActivity.price;
+      return selectedActivity.price * form.num_people;
     }
     if (form.type === 'package' && selectedPackage) {
       return selectedPackage.price * form.num_people;
     }
     return 0;
-  }, [form.type, selectedActivity, selectedPackage, form.num_people, isBowling]);
+  }, [form.type, selectedActivity, selectedPackage, form.num_people, form.num_lanes, isBowling]);
 
   const stepLabels = [
     t('booking.step1'),
@@ -176,8 +174,8 @@ function BookingFlow() {
       ) {
         errs.num_people = `Maximum ${selectedPackage.maxPeople} people`;
       }
-      if (isBowling && form.num_people > 8 * 6) {
-        errs.num_people = 'Maximum 48 people (8 per lane, 6 lanes)';
+      if (isBowling && (form.num_lanes < 1 || form.num_lanes > 6)) {
+        errs.num_lanes = 'Between 1 and 6 lanes';
       }
     }
 
@@ -503,7 +501,7 @@ function Step2({
                     {act.name}
                   </span>
                   <span className="text-xs text-[#62666d]">
-                    {formatCurrency(act.price)} {act.priceLabel}
+                    {formatCurrency(act.price)}{t('activities.perHour')}
                   </span>
                 </button>
               );
@@ -611,7 +609,7 @@ function Step2({
         </div>
       </div>
 
-      {/* People */}
+      {/* People & Lanes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <Input
           label={t('booking.people')}
@@ -622,29 +620,28 @@ function Step2({
           onChange={(e) => patch({ num_people: parseInt(e.target.value) || 1 })}
           error={errors.num_people}
         />
-        {form.type === 'activity' && selectedActivity && (
-          <div className="flex items-end pb-2">
-            <p className="text-xs text-[#8a8f98]">
-              Max {selectedActivity.capacity} pax{isBowling ? ' per lane (6 lanes available)' : ''}
-            </p>
-          </div>
+        {form.type === 'activity' && isBowling && (
+          <Input
+            label={t('booking.lanes')}
+            type="number"
+            min={1}
+            max={6}
+            value={form.num_lanes}
+            onChange={(e) => patch({ num_lanes: parseInt(e.target.value) || 1 })}
+            error={errors.num_lanes}
+          />
         )}
       </div>
 
       {/* Price estimate */}
       {priceEstimate > 0 && (
-        <div className="rounded-xl border border-neon-gold/30 bg-neon-gold/5 px-5 py-4 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-[#8a8f98]">
-              {t('booking.estimatedTotal')}
-            </span>
-            <span className="text-xl font-bold text-neon-gold text-glow-gold">
-              {formatCurrency(priceEstimate)}
-            </span>
-          </div>
-          <p className="text-xs text-[#62666d]">
-            + 10% service charge. Final price confirmed upon booking.
-          </p>
+        <div className="flex items-center justify-between px-5 py-4 rounded-xl border border-neon-gold/30 bg-neon-gold/5">
+          <span className="text-sm font-medium text-[#8a8f98]">
+            {t('booking.estimatedTotal')}
+          </span>
+          <span className="text-xl font-bold text-neon-gold text-glow-gold">
+            {formatCurrency(priceEstimate)}
+          </span>
         </div>
       )}
     </div>
@@ -774,11 +771,8 @@ function Step4({
     { label: t('booking.people'), value: String(form.num_people) },
   ];
 
-  if (form.type === 'activity' && selectedActivity) {
-    rows.push({
-      label: 'Rate',
-      value: `₱${selectedActivity.price.toLocaleString()} ${selectedActivity.priceLabel}`,
-    });
+  if (form.type === 'activity' && selectedActivity?.name === 'Bowling') {
+    rows.push({ label: t('booking.lanes'), value: String(form.num_lanes) });
   }
 
   if (form.type === 'package' && selectedPackage) {

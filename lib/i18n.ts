@@ -32,11 +32,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'activities.perHour': '/hr',
     'activities.free': 'Free Entry',
     'activities.bookNow': 'Book Now',
-    'activities.startingAt': 'Starting at',
-    'activities.rates': 'Rates',
-    'activities.notes': 'Notes',
-    'activities.serviceCharge': '10% service charge applies to all activities, food & drinks.',
-    'activities.page.title': 'Our Activities & Rates',
+    'activities.page.title': 'Our Activities',
     'activities.page.subtitle': 'Every game, every lane, every moment — built for fun.',
 
     // Packages
@@ -155,11 +151,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'activities.perHour': '/oras',
     'activities.free': 'Libreng Pasok',
     'activities.bookNow': 'Mag-Book',
-    'activities.startingAt': 'Simula sa',
-    'activities.rates': 'Mga Presyo',
-    'activities.notes': 'Mga Tala',
-    'activities.serviceCharge': '10% service charge sa lahat ng activities, pagkain at inumin.',
-    'activities.page.title': 'Mga Aktibidad at Presyo',
+    'activities.page.title': 'Mga Aktibidad Namin',
     'activities.page.subtitle': 'Bawat laro, bawat lane, bawat sandali — para sa kasiyahan.',
 
     // Packages
