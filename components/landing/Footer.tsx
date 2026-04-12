@@ -57,21 +57,27 @@ export default function Footer() {
             {/* Social icons */}
             <div className="mt-5 flex items-center gap-3">
               <a
-                href="#"
+                href={VENUE_INFO.socials.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex h-9 w-9 items-center justify-center rounded-lg border border-border transition-colors hover:border-[#00D4FF] hover:text-[#00D4FF]" style={{ color: '#8a8f98' }}
                 aria-label="Facebook"
               >
                 <FacebookIcon />
               </a>
               <a
-                href="#"
+                href={VENUE_INFO.socials.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex h-9 w-9 items-center justify-center rounded-lg border border-border transition-colors hover:border-[#00D4FF] hover:text-[#00D4FF]" style={{ color: '#8a8f98' }}
                 aria-label="Instagram"
               >
                 <InstagramIcon />
               </a>
               <a
-                href="#"
+                href={VENUE_INFO.socials.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex h-9 w-9 items-center justify-center rounded-lg border border-border transition-colors hover:border-[#00D4FF] hover:text-[#00D4FF]" style={{ color: '#8a8f98' }}
                 aria-label="TikTok"
               >
@@ -109,16 +115,7 @@ export default function Footer() {
               <li className="text-sm" style={{ color: '#8a8f98' }}>
                 <span className="text-white">{OPERATING_HOURS.weekday.label}</span>
                 <br />
-                {OPERATING_HOURS.weekday.open} &ndash;{' '}
-                {OPERATING_HOURS.weekday.close === '00:00'
-                  ? '12:00 MN'
-                  : OPERATING_HOURS.weekday.close}
-              </li>
-              <li className="text-sm" style={{ color: '#8a8f98' }}>
-                <span className="text-white">{OPERATING_HOURS.weekend.label}</span>
-                <br />
-                {OPERATING_HOURS.weekend.open} &ndash; {OPERATING_HOURS.weekend.close}{' '}
-                AM
+                {OPERATING_HOURS.weekday.open} AM &ndash; {OPERATING_HOURS.weekday.close} AM
               </li>
             </ul>
           </div>

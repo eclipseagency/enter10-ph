@@ -189,14 +189,14 @@ export const PACKAGES = [
     name: 'School Fun Day',
     nameFil: 'School Fun Day',
     type: 'school' as const,
-    description: 'The ultimate field trip experience. 3 hours of bowling, arcade tokens, and a meal for every student.',
-    descriptionFil: 'Ang pinakamahusay na field trip experience. 3 oras ng bowling, arcade tokens, at pagkain para sa bawat estudyante.',
+    description: '₱450 per head — includes 1 game of bowling, 1 round of Fast Gun Man, 30 mins archery, and 1 meal of King Pin Fries!',
+    descriptionFil: '₱450 bawat estudyante — kasama ang 1 game ng bowling, 1 round ng Fast Gun Man, 30 mins archery, at 1 meal ng King Pin Fries!',
     minPeople: 20,
     maxPeople: 100,
-    price: 50,
+    price: 450,
     duration: 180,
-    includes: ['3 hours bowling', 'Arcade tokens per student', 'Meal per student', 'Dedicated event host'],
-    includesFil: ['3 oras ng bowling', 'Arcade tokens bawat estudyante', 'Pagkain bawat estudyante', 'Dedicated event host'],
+    includes: ['1 Game of Bowling (10 Frames)', '1 Round of Fast Gun Man', '30 Minutes of Archery', '1 Meal of King Pin Fries'],
+    includesFil: ['1 Game ng Bowling (10 Frames)', '1 Round ng Fast Gun Man', '30 Minuto ng Archery', '1 Meal ng King Pin Fries'],
     icon: '🎓',
     color: 'neon-blue',
   },
@@ -235,8 +235,7 @@ export const PACKAGES = [
 ];
 
 export const OPERATING_HOURS = {
-  weekday: { open: '10:00', close: '00:00', label: 'Mon - Thu' },
-  weekend: { open: '10:00', close: '02:00', label: 'Fri - Sun' },
+  weekday: { open: '10:00', close: '01:00', label: 'Daily' },
 };
 
 export const TIME_SLOTS = [
@@ -248,7 +247,7 @@ export const TIME_SLOTS = [
 export const VENUE_INFO = {
   name: 'Enter 10 Bowling',
   address: 'Venezia Dr, McKinley Hill, Taguig, Metro Manila, Philippines',
-  phone: '+63-2-000-0008',
+  phone: '+63 968 771 9664',
   email: 'book@enter-ten.com',
   lat: 14.5311,
   lng: 121.0504,
@@ -256,6 +255,13 @@ export const VENUE_INFO = {
   mapsEmbed: 'https://www.google.com/maps?q=ENTER+10+BOWLING+McKinley+Hill+Taguig&output=embed',
   googleRating: '4.6',
   googleReviews: '324',
+  socials: {
+    facebook: 'https://www.facebook.com/share/1B1w96aGQv/?mibextid=wwXIfr',
+    instagram: 'https://www.instagram.com/enter10.ph?igsh=eTl5NXBvZXBqeHgz',
+    tiktok: 'https://www.tiktok.com/@enter10ph?_r=1&_t=ZS-95JmTz9Xa1I',
+    whatsapp: 'https://wa.me/639687719664',
+    viber: 'viber://chat?number=639687719664',
+  },
 };
 
 export const NAV_LINKS = [

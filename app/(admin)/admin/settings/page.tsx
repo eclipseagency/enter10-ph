@@ -33,41 +33,21 @@ export default function SettingsPage() {
       {/* Operating Hours */}
       <section>
         <h2 className="text-lg font-semibold mb-4">Operating Hours</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Card glow="gold">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-neon-gold/10 border border-neon-gold/20 flex items-center justify-center text-neon-gold">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-              </div>
-              <div>
-                <p className="font-medium">{OPERATING_HOURS.weekday.label}</p>
-                <p className="text-text-muted text-sm">Weekdays</p>
-              </div>
+        <Card glow="gold">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-neon-gold/10 border border-neon-gold/20 flex items-center justify-center text-neon-gold">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
             </div>
-            <p className="text-2xl font-bold text-neon-gold">
-              {OPERATING_HOURS.weekday.open} - {OPERATING_HOURS.weekday.close}
-            </p>
-          </Card>
-
-          <Card glow="magenta">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-neon-magenta/10 border border-neon-magenta/20 flex items-center justify-center text-neon-magenta">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-              </div>
-              <div>
-                <p className="font-medium">{OPERATING_HOURS.weekend.label}</p>
-                <p className="text-text-muted text-sm">Weekends</p>
-              </div>
+            <div>
+              <p className="font-medium">{OPERATING_HOURS.weekday.label}</p>
             </div>
-            <p className="text-2xl font-bold text-neon-magenta">
-              {OPERATING_HOURS.weekend.open} - {OPERATING_HOURS.weekend.close}
-            </p>
-          </Card>
-        </div>
+          </div>
+          <p className="text-2xl font-bold text-neon-gold">
+            10:00 AM - 1:00 AM
+          </p>
+        </Card>
       </section>
 
       {/* Activities Pricing */}
