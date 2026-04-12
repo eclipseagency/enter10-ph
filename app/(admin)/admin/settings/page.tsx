@@ -1,7 +1,7 @@
 'use client';
 
 import Card from '@/components/ui/Card';
-import { ACTIVITIES, PACKAGES, OPERATING_HOURS, VENUE_INFO } from '@/lib/constants';
+import { ACTIVITIES, PACKAGES, OPERATING_HOURS, VENUE_INFO, SERVICE_CHARGE_PERCENT } from '@/lib/constants';
 
 export default function SettingsPage() {
   return (
@@ -73,48 +73,48 @@ export default function SettingsPage() {
       {/* Activities Pricing */}
       <section>
         <h2 className="text-lg font-semibold mb-4">Activities &amp; Pricing</h2>
-        <div className="glass rounded-2xl border border-border overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-text-muted">
-                <th className="text-left px-4 py-3 font-medium">Activity</th>
-                <th className="text-left px-4 py-3 font-medium">Price / Hour</th>
-                <th className="text-left px-4 py-3 font-medium">Capacity</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/50">
-              {ACTIVITIES.map((activity) => (
-                <tr
-                  key={activity.id}
-                  className="hover:bg-white/[0.02] transition-colors"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{activity.icon}</span>
-                      <div>
-                        <p className="font-medium text-white">{activity.name}</p>
-                        <p className="text-text-dim text-xs mt-0.5 max-w-xs truncate">
-                          {activity.description}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    {activity.price > 0 ? (
-                      <span className="text-neon-gold font-semibold">
-                        PHP {activity.price}
-                      </span>
-                    ) : (
-                      <span className="text-success font-medium">Free Entry</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-text-muted">
-                    {activity.capacity} {activity.capacity === 1 ? 'player' : 'players'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <p className="text-neon-gold text-sm mb-4">
+          {SERVICE_CHARGE_PERCENT}% service charge applies to all activities, food &amp; drinks.
+        </p>
+        <div className="space-y-4">
+          {ACTIVITIES.map((activity) => (
+            <div
+              key={activity.id}
+              className="glass rounded-2xl border border-border overflow-hidden"
+            >
+              <div className="px-4 py-3 flex items-center gap-3 border-b border-border/50">
+                <span className="text-xl">{activity.icon}</span>
+                <div className="flex-1">
+                  <p className="font-medium text-white">{activity.name}</p>
+                  <p className="text-text-dim text-xs mt-0.5">
+                    Max {activity.capacity} pax
+                  </p>
+                </div>
+              </div>
+              <div className="px-4 py-3 space-y-1.5">
+                {activity.rates.map((rate, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span className="text-text-muted">{rate.label}</span>
+                    <span className="text-neon-gold font-semibold">
+                      PHP {rate.price.toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {activity.notes.length > 0 && (
+                <div className="px-4 py-2 border-t border-border/30">
+                  {activity.notes.map((note, i) => (
+                    <p key={i} className="text-text-dim text-xs">
+                      • {note}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </section>
 
