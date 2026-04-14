@@ -11,13 +11,13 @@ export const metadata: Metadata = {
     description: "Reserve bowling, billiards, VIP rooms & party packages online. Venice Grand Canal Mall, Taguig.",
     url: "https://www.enter-ten.com/ph/booking",
     siteName: "Enter10 Philippines",
-    images: [{ url: "/ph/images/og-image.jpg", width: 1200, height: 630, alt: "Enter10 entertainment venue" }],
+    images: [{ url: "/images/og-image.jpg", width: 1200, height: 630, alt: "Enter10 entertainment venue" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Book Now — Enter10 Philippines",
     description: "Reserve bowling, billiards, VIP rooms & party packages online.",
-    images: ["/ph/images/og-image.jpg"],
+    images: ["/images/og-image.jpg"],
   },
 };
 

@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "Enter10 Philippines",
     images: [
       {
-        url: "/ph/images/og-image.jpg",
+        url: "/images/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Enter10 Philippines — Bowling & Entertainment at Venice Grand Canal Mall",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     description: "Metro Manila's premier entertainment hub — bowling, billiards, arcade & more at Venice Grand Canal Mall, Taguig.",
     images: [
       {
-        url: "/ph/images/og-image.jpg",
+        url: "/images/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Enter10 Philippines — Bowling & Entertainment",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
-    apple: "/ph/images/logo.png",
+    apple: "/images/logo.png",
   },
 };
 
@@ -74,7 +74,7 @@ const jsonLd = {
   description: "Metro Manila's premier entertainment destination — bowling, billiards, arcade, air hockey, dining & VIP rooms.",
   url: siteUrl,
   logo: "https://www.enter-ten.com/ph/images/logo.png",
-  image: "https://www.enter-ten.com/ph/images/og-image.jpg",
+  image: "https://www.enter-ten.com/images/og-image.jpg",
   priceRange: "$$",
   address: {
     "@type": "PostalAddress",
