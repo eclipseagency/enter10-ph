@@ -11,13 +11,13 @@ export const metadata: Metadata = {
     description: "Venice Grand Canal Mall, McKinley Hill, Taguig. Call, email or visit us for bookings and inquiries.",
     url: "https://www.enter-ten.com/ph/contact",
     siteName: "Enter10 Philippines",
-    images: [{ url: "/images/og-image.jpg", width: 1200, height: 630, alt: "Enter10 venue at Venice Grand Canal" }],
+    images: [{ url: "https://www.enter-ten.com/ph/images/og-image.jpg", width: 1200, height: 630, alt: "Enter10 venue at Venice Grand Canal" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Contact Enter10 Philippines",
     description: "Venice Grand Canal Mall, McKinley Hill, Taguig. Bookings and inquiries.",
-    images: ["/images/og-image.jpg"],
+    images: ["https://www.enter-ten.com/ph/images/og-image.jpg"],
   },
 };
 

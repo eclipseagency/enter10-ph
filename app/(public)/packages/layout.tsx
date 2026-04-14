@@ -11,13 +11,13 @@ export const metadata: Metadata = {
     description: "Birthday parties, corporate events & group packages. All-in-one entertainment at Venice Grand Canal Mall.",
     url: "https://www.enter-ten.com/ph/packages",
     siteName: "Enter10 Philippines",
-    images: [{ url: "/images/og-image.jpg", width: 1200, height: 630, alt: "Enter10 VIP party room" }],
+    images: [{ url: "https://www.enter-ten.com/ph/images/og-image.jpg", width: 1200, height: 630, alt: "Enter10 VIP party room" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Packages — Enter10 Philippines",
     description: "Birthday parties, corporate events & group entertainment packages.",
-    images: ["/images/og-image.jpg"],
+    images: ["https://www.enter-ten.com/ph/images/og-image.jpg"],
   },
 };
 
