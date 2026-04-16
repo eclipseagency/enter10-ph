@@ -5,9 +5,9 @@ import GallerySection from '@/components/landing/GallerySection';
 import CTASection from '@/components/landing/CTASection';
 
 export const metadata = {
-  title: 'Enter10 Philippines | Play. Eat. Celebrate.',
+  title: 'Play. Eat. Celebrate.',
   description:
-    'Your all-in-one entertainment destination at Venice Grand Canal Mall, Taguig. Bowling, billiards, arcade, air hockey, and more.',
+    'Enter10 Philippines — your all-in-one entertainment destination at Venice Grand Canal Mall, Taguig. Bowling, billiards, arcade, air hockey, dining & VIP rooms.',
 };
 
 export default function HomePage() {

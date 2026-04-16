@@ -368,7 +368,7 @@ function BookingFlow() {
 
         {/* Step content - simple conditional rendering */}
         <div className="min-h-[420px]">
-          {step === 0 && <Step1 form={form} patch={patch} t={t} />}
+          {step === 0 && <Step1 form={form} patch={patch} t={t} onSelect={() => setStep(1)} />}
           {step === 1 && (
             <Step2
               form={form}
@@ -446,10 +446,12 @@ function Step1({
   form,
   patch,
   t,
+  onSelect,
 }: {
   form: BookingFormData;
   patch: (p: Partial<BookingFormData>) => void;
   t: (key: string) => string;
+  onSelect: () => void;
 }) {
   const options: {
     value: 'activity' | 'package';
@@ -491,7 +493,7 @@ function Step1({
           <button
             key={opt.value}
             type="button"
-            onClick={() =>
+            onClick={() => {
               patch({
                 type: opt.value,
                 activity_id: null,
@@ -499,8 +501,9 @@ function Step1({
                 package_type: null,
                 num_people: 1,
                 num_lanes: 1,
-              })
-            }
+              });
+              onSelect();
+            }}
             className={[
               'relative flex flex-col items-center text-center gap-4 p-8 rounded-2xl border-2 transition-all duration-300 cursor-pointer',
               'bg-bg-card hover:-translate-y-[2px]',

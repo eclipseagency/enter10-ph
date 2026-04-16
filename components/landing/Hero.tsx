@@ -16,9 +16,9 @@ export default function Hero() {
         loop
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
-        poster="/images/hero.jpg"
+        poster="/ph/images/hero.jpg"
       >
-        <source src="/hero-video.mp4" type="video/mp4" />
+        <source src="/ph/hero-video.mp4" type="video/mp4" />
       </video>
 
       {/* Dark overlay */}
