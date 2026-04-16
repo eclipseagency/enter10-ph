@@ -356,10 +356,10 @@ export default function BookingsPage() {
                             </div>
                             <div>
                               <p className="text-text-dim text-xs uppercase tracking-wider mb-1">
-                                End Time
+                                Booking Time
                               </p>
                               <p className="text-text-muted">
-                                {booking.end_time || 'N/A'}
+                                {booking.start_time || 'N/A'}
                               </p>
                             </div>
                             <div>
