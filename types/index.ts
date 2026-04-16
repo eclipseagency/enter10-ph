@@ -39,6 +39,7 @@ export interface Booking {
   user_id: string | null;
   branch_id: string;
   activity_id: string | null;
+  activity_ids: string[];
   package_id: string | null;
   booking_type: 'bowling' | 'event_package' | 'vip_room' | 'activity' | 'package';
   num_people: number;

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { getBranchName, getBranchFlag } from '@/lib/branches';
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Dashboard', icon: DashboardIcon },
@@ -37,8 +38,15 @@ function SettingsIcon() {
   );
 }
 
+interface SessionInfo {
+  email: string;
+  role: 'super_admin' | 'branch_admin';
+  branchId: string | null;
+}
+
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
+  const [session, setSession] = useState<SessionInfo | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,7 +61,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (cancelled) return;
-        setAuthenticated(Boolean(data?.authenticated));
+        if (data?.authenticated) {
+          setAuthenticated(true);
+          setSession({ email: data.email, role: data.role, branchId: data.branchId });
+        }
       })
       .catch(() => {})
       .finally(() => {
@@ -80,7 +91,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
       if (res.ok) {
+        const data = await res.json().catch(() => ({}));
         setAuthenticated(true);
+        setSession({ email: data.email, role: data.role, branchId: data.branchId });
         setPassword('');
       } else {
         const data = await res.json().catch(() => ({}));
@@ -103,6 +116,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       /* ignore */
     }
     setAuthenticated(false);
+    setSession(null);
     setEmail('');
     setPassword('');
   };
@@ -261,9 +275,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </button>
           <div className="hidden lg:block" />
           <div className="flex items-center gap-3">
-            <span className="text-text-muted text-sm">Philippines Branch</span>
-            <div className="w-8 h-8 rounded-full bg-neon-blue/20 border border-neon-blue/30 flex items-center justify-center text-neon-blue text-xs font-bold">
-              PH
+            <span className="text-text-muted text-sm">
+              {session?.role === 'super_admin'
+                ? 'All Branches'
+                : session?.branchId
+                ? `${getBranchFlag(session.branchId)} ${getBranchName(session.branchId)}`
+                : 'Admin'}
+            </span>
+            <div className="w-8 h-8 rounded-full bg-neon-blue/20 border border-neon-blue/30 flex items-center justify-center text-neon-blue text-[10px] font-bold uppercase">
+              {session?.role === 'super_admin' ? 'SA' : 'BA'}
             </div>
           </div>
         </header>

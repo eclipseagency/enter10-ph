@@ -14,6 +14,16 @@ function getActivityName(id: string | null) {
   return act ? `${act.icon} ${act.name}` : id.slice(0, 8);
 }
 
+function getActivitiesLabel(booking: Booking) {
+  const ids = Array.isArray(booking.activity_ids) && booking.activity_ids.length > 0
+    ? booking.activity_ids
+    : booking.activity_id
+    ? [booking.activity_id]
+    : [];
+  if (ids.length === 0) return '-';
+  return ids.map(getActivityName).join(', ');
+}
+
 function getPackageName(id: string | null) {
   if (!id) return '-';
   const pkg = PACKAGES.find((p) => p.id === id);
@@ -24,7 +34,7 @@ function getTypeLabel(booking: Booking) {
   if (booking.booking_type === 'event_package' || booking.booking_type === 'package') {
     return getPackageName(booking.package_id);
   }
-  return getActivityName(booking.activity_id);
+  return getActivitiesLabel(booking);
 }
 
 function todayISO() {

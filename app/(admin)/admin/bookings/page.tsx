@@ -5,12 +5,23 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { ACTIVITIES, PACKAGES } from '@/lib/constants';
+import { getBranchName, getBranchFlag } from '@/lib/branches';
 import type { Booking } from '@/types';
 
 function getActivityName(id: string | null) {
   if (!id) return '-';
   const act = ACTIVITIES.find((a) => a.id === id);
   return act ? `${act.icon} ${act.name}` : id.slice(0, 8);
+}
+
+function getActivitiesLabel(booking: Booking) {
+  const ids = Array.isArray(booking.activity_ids) && booking.activity_ids.length > 0
+    ? booking.activity_ids
+    : booking.activity_id
+    ? [booking.activity_id]
+    : [];
+  if (ids.length === 0) return '-';
+  return ids.map(getActivityName).join(', ');
 }
 
 function getPackageName(id: string | null) {
@@ -23,7 +34,7 @@ function getTypeLabel(booking: Booking) {
   if (booking.booking_type === 'event_package' || booking.booking_type === 'package') {
     return getPackageName(booking.package_id);
   }
-  return getActivityName(booking.activity_id);
+  return getActivitiesLabel(booking);
 }
 
 type SortField = 'booking_date' | 'guest_name' | 'status' | 'created_at';
@@ -211,7 +222,8 @@ export default function BookingsPage() {
                 </th>
                 <th className="text-left px-4 py-3 font-medium">Email</th>
                 <th className="text-left px-4 py-3 font-medium">Phone</th>
-                <th className="text-left px-4 py-3 font-medium">Type / Activity</th>
+                <th className="text-left px-4 py-3 font-medium">Branch</th>
+                <th className="text-left px-4 py-3 font-medium">Activities / Package</th>
                 <th
                   className="text-left px-4 py-3 font-medium cursor-pointer hover:text-white transition-colors select-none"
                   onClick={() => handleSort('booking_date')}
@@ -233,7 +245,7 @@ export default function BookingsPage() {
             <tbody className="divide-y divide-border/50">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="text-center py-12 text-text-dim">
+                  <td colSpan={11} className="text-center py-12 text-text-dim">
                     No bookings match your filters
                   </td>
                 </tr>
@@ -255,6 +267,9 @@ export default function BookingsPage() {
                       </td>
                       <td className="px-4 py-3 text-text-muted">
                         {booking.guest_phone || '-'}
+                      </td>
+                      <td className="px-4 py-3 text-text-muted whitespace-nowrap">
+                        {getBranchFlag(booking.branch_id)} {getBranchName(booking.branch_id)}
                       </td>
                       <td className="px-4 py-3 text-text-muted">
                         {getTypeLabel(booking)}
@@ -321,7 +336,7 @@ export default function BookingsPage() {
                     {/* Expanded details */}
                     {expandedId === booking.id && (
                       <tr key={`${booking.id}-detail`} className="bg-white/[0.015]">
-                        <td colSpan={10} className="px-4 py-4">
+                        <td colSpan={11} className="px-4 py-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                             <div>
                               <p className="text-text-dim text-xs uppercase tracking-wider mb-1">

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { credentialsMatch, signSession, SESSION } from '@/lib/auth';
+import { authenticate, signSession, SESSION } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
@@ -15,12 +15,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Server auth not configured' }, { status: 500 });
     }
 
-    if (!credentialsMatch(email, password)) {
+    const session = authenticate(email, password);
+    if (!session) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
-    const token = await signSession(email.trim().toLowerCase(), secret);
-    const res = NextResponse.json({ ok: true, email: email.trim().toLowerCase() });
+    const token = await signSession(session, secret);
+    const res = NextResponse.json({
+      ok: true,
+      email: session.email,
+      role: session.role,
+      branchId: session.branchId,
+    });
     res.cookies.set(SESSION.cookieName, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

@@ -2,25 +2,54 @@
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ACTIVITIES, PACKAGES, TIME_SLOTS, VENUE_INFO } from '@/lib/constants';
+import { ACTIVITIES, PACKAGES, TIME_SLOTS } from '@/lib/constants';
+import { ALL_BRANCHES, MIN_PEOPLE, PH_BRANCH_ID } from '@/lib/branches';
 import { useI18n } from '@/lib/i18n';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Card from '@/components/ui/Card';
 import StepIndicator from '@/components/ui/StepIndicator';
-import type { BookingFormData } from '@/types';
 
-/* ------------------------------------------------------------------ */
-/*  Bookable activities = everything with price > 0                   */
-/* ------------------------------------------------------------------ */
 const BOOKABLE_ACTIVITIES = ACTIVITIES.filter((a) => a.price > 0);
 
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                           */
-/* ------------------------------------------------------------------ */
+interface BookingFormState {
+  branch_id: string | null;
+  type: 'activity' | 'package';
+  activity_ids: string[];
+  package_id: string | null;
+  package_type: string | null;
+  date: string;
+  time: string;
+  end_time: string;
+  num_people: number;
+  num_lanes: number;
+  guest_name: string;
+  guest_email: string;
+  guest_phone: string;
+  company_name: string;
+  special_requests: string;
+}
+
+const INITIAL_FORM: BookingFormState = {
+  branch_id: PH_BRANCH_ID,
+  type: 'activity',
+  activity_ids: [],
+  package_id: null,
+  package_type: null,
+  date: '',
+  time: '',
+  end_time: '',
+  num_people: MIN_PEOPLE,
+  num_lanes: 1,
+  guest_name: '',
+  guest_email: '',
+  guest_phone: '',
+  company_name: '',
+  special_requests: '',
+};
+
 function todayISO() {
-  const d = new Date();
-  return d.toISOString().split('T')[0];
+  return new Date().toISOString().split('T')[0];
 }
 
 function formatCurrency(amount: number) {
@@ -33,61 +62,36 @@ function addHour(time: string) {
   return `${String(next).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
-const INITIAL_FORM: BookingFormData = {
-  type: 'activity',
-  activity_id: null,
-  package_id: null,
-  package_type: null,
-  date: '',
-  time: '',
-  end_time: '',
-  num_people: 1,
-  num_lanes: 1,
-  guest_name: '',
-  guest_email: '',
-  guest_phone: '',
-  company_name: '',
-  special_requests: '',
-};
-
-/* ------------------------------------------------------------------ */
-/*  Inner booking component (uses useSearchParams)                    */
-/* ------------------------------------------------------------------ */
 function BookingFlow() {
   const searchParams = useSearchParams();
   const { t } = useI18n();
 
   const [step, setStep] = useState(0);
-  const [form, setForm] = useState<BookingFormData>(INITIAL_FORM);
+  const [form, setForm] = useState<BookingFormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [fallbackMode, setFallbackMode] = useState(false);
 
-  /* Pre-select package type from URL ?package=school|corporate|birthday */
   useEffect(() => {
     const pkgParam = searchParams.get('package');
     if (pkgParam) {
-      const matched = PACKAGES.find(
-        (p) => p.type === pkgParam.toLowerCase(),
-      );
+      const matched = PACKAGES.find((p) => p.type === pkgParam.toLowerCase());
       if (matched) {
         setForm((f) => ({
           ...f,
           type: 'package',
           package_id: matched.id,
           package_type: matched.type,
-          num_people: matched.minPeople,
+          num_people: Math.max(matched.minPeople, MIN_PEOPLE),
         }));
-        setStep(1);
+        setStep(2);
       }
     }
   }, [searchParams]);
 
-  /* ---- derived ---------------------------------------------------- */
-  const selectedActivity = useMemo(
-    () => BOOKABLE_ACTIVITIES.find((a) => a.id === form.activity_id) ?? null,
-    [form.activity_id],
+  const selectedActivities = useMemo(
+    () => BOOKABLE_ACTIVITIES.filter((a) => form.activity_ids.includes(a.id)),
+    [form.activity_ids],
   );
 
   const selectedPackage = useMemo(
@@ -95,37 +99,29 @@ function BookingFlow() {
     [form.package_id],
   );
 
-  const isBowling = selectedActivity?.name === 'Bowling';
+  const includesBowling = selectedActivities.some((a) => a.name === 'Bowling');
 
   const needsCompany =
     form.type === 'package' &&
-    (selectedPackage?.type === 'school' ||
-      selectedPackage?.type === 'corporate');
+    (selectedPackage?.type === 'school' || selectedPackage?.type === 'corporate');
 
   const priceEstimate = useMemo(() => {
-    if (form.type === 'activity' && selectedActivity) {
-      if (isBowling) {
-        return selectedActivity.price * form.num_people;
-      }
-      return selectedActivity.price;
+    if (form.type === 'activity') {
+      return selectedActivities.reduce((sum, act) => {
+        if (act.name === 'Bowling') return sum + act.price * form.num_people;
+        return sum + act.price;
+      }, 0);
     }
     if (form.type === 'package' && selectedPackage) {
       return selectedPackage.price * form.num_people;
     }
     return 0;
-  }, [form.type, selectedActivity, selectedPackage, form.num_people, isBowling]);
+  }, [form.type, selectedActivities, selectedPackage, form.num_people]);
 
-  const stepLabels = [
-    t('booking.step1'),
-    t('booking.step2'),
-    t('booking.step3'),
-    t('booking.step4'),
-  ];
+  const stepLabels = ['Branch', t('booking.step1'), t('booking.step2'), t('booking.step3'), t('booking.step4')];
 
-  /* ---- helpers ---------------------------------------------------- */
-  function patch(partial: Partial<BookingFormData>) {
+  function patch(partial: Partial<BookingFormState>) {
     setForm((f) => ({ ...f, ...partial }));
-    /* Clear errors for changed fields */
     const keys = Object.keys(partial);
     setErrors((prev) => {
       const next = { ...prev };
@@ -134,39 +130,48 @@ function BookingFlow() {
     });
   }
 
+  function toggleActivity(id: string) {
+    setForm((f) => {
+      const has = f.activity_ids.includes(id);
+      return {
+        ...f,
+        activity_ids: has ? f.activity_ids.filter((x) => x !== id) : [...f.activity_ids, id],
+      };
+    });
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next.activity_ids;
+      return next;
+    });
+  }
+
   function goNext() {
     if (!validateStep()) return;
-    setStep((s) => Math.min(s + 1, 3));
+    setStep((s) => Math.min(s + 1, 4));
   }
 
   function goBack() {
     setStep((s) => Math.max(s - 1, 0));
   }
 
-  /* ---- validation ------------------------------------------------- */
   function validateStep(): boolean {
     const errs: Record<string, string> = {};
 
     if (step === 0) {
-      /* type is always set */
+      if (!form.branch_id) errs.branch_id = 'Please select a branch';
     }
 
-    if (step === 1) {
-      if (form.type === 'activity' && !form.activity_id) {
-        errs.activity_id = 'Please select an activity';
+    if (step === 2) {
+      if (form.type === 'activity' && form.activity_ids.length === 0) {
+        errs.activity_ids = 'Please select at least one activity';
       }
       if (form.type === 'package' && !form.package_id) {
         errs.package_id = 'Please select a package';
       }
       if (!form.date) errs.date = 'Please choose a date';
       if (!form.time) errs.time = 'Please choose a time slot';
-      if (form.num_people < 1) errs.num_people = 'At least 1 person';
-      if (
-        form.type === 'package' &&
-        selectedPackage &&
-        form.num_people < selectedPackage.minPeople
-      ) {
-        errs.num_people = `Minimum ${selectedPackage.minPeople} people`;
+      if (form.num_people < MIN_PEOPLE) {
+        errs.num_people = `Minimum ${MIN_PEOPLE} people required`;
       }
       if (
         form.type === 'package' &&
@@ -175,12 +180,12 @@ function BookingFlow() {
       ) {
         errs.num_people = `Maximum ${selectedPackage.maxPeople} people`;
       }
-      if (isBowling && form.num_people > 48) {
-        errs.num_people = 'Maximum 48 people (8 per lane, 6 lanes)';
+      if (includesBowling && form.num_people > 48) {
+        errs.num_people = 'Maximum 48 people (8 per lane, 6 lanes) for Bowling';
       }
     }
 
-    if (step === 2) {
+    if (step === 3) {
       if (!form.guest_name.trim()) errs.guest_name = 'Name is required';
       if (!form.guest_email.trim()) errs.guest_email = 'Email is required';
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.guest_email))
@@ -194,14 +199,26 @@ function BookingFlow() {
     return Object.keys(errs).length === 0;
   }
 
-  /* ---- submit ----------------------------------------------------- */
   async function handleSubmit() {
     if (!validateStep()) return;
     setSubmitting(true);
 
     const payload = {
-      ...form,
+      branch_id: form.branch_id,
+      type: form.type,
+      activity_ids: form.activity_ids,
+      activity_id: form.activity_ids[0] ?? null,
+      package_id: form.package_id,
+      date: form.date,
+      time: form.time,
       end_time: addHour(form.time),
+      num_people: form.num_people,
+      num_lanes: form.num_lanes,
+      guest_name: form.guest_name,
+      guest_email: form.guest_email,
+      guest_phone: form.guest_phone,
+      company_name: form.company_name,
+      special_requests: form.special_requests,
       total_price: priceEstimate,
     };
 
@@ -211,55 +228,18 @@ function BookingFlow() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error('Booking failed');
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'Booking failed');
+      }
       setSubmitted(true);
-      setFallbackMode(false);
-    } catch {
-      /* API unavailable — fall back to WhatsApp reservation flow */
-      setSubmitted(true);
-      setFallbackMode(true);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setErrors({ submit: msg });
     } finally {
       setSubmitting(false);
     }
   }
-
-  /* Build a WhatsApp deep link with the booking details pre-filled */
-  const whatsappLink = useMemo(() => {
-    const itemName =
-      form.type === 'activity'
-        ? selectedActivity?.name ?? ''
-        : selectedPackage?.name ?? '';
-    const rateLine =
-      form.type === 'activity' && selectedActivity
-        ? `Rate: ₱${selectedActivity.price.toLocaleString()} ${selectedActivity.priceLabel}`
-        : form.type === 'package' && selectedPackage
-          ? `Rate: ₱${selectedPackage.price.toLocaleString()} per person`
-          : '';
-
-    const lines = [
-      `Hi Enter10! I'd like to reserve:`,
-      ``,
-      `• ${form.type === 'activity' ? 'Activity' : 'Package'}: ${itemName}`,
-      rateLine,
-      `• Date: ${form.date}`,
-      `• Time: ${form.time}${form.time ? ` - ${addHour(form.time)}` : ''}`,
-      `• Number of People: ${form.num_people}`,
-      ``,
-      `My Info:`,
-      `• Name: ${form.guest_name}`,
-      `• Email: ${form.guest_email}`,
-      `• Phone: ${form.guest_phone}`,
-      form.company_name ? `• Company/School: ${form.company_name}` : '',
-      form.special_requests ? `• Notes: ${form.special_requests}` : '',
-      ``,
-      `Estimated total: ₱${priceEstimate.toLocaleString()} (+ 10% service charge)`,
-    ].filter(Boolean);
-
-    const text = encodeURIComponent(lines.join('\n'));
-    /* Strip non-digits from phone for wa.me */
-    const waNumber = VENUE_INFO.phone.replace(/\D/g, '');
-    return `https://wa.me/${waNumber}?text=${text}`;
-  }, [form, selectedActivity, selectedPackage, priceEstimate]);
 
   function reset() {
     setForm(INITIAL_FORM);
@@ -267,70 +247,12 @@ function BookingFlow() {
     setErrors({});
     setSubmitted(false);
     setSubmitting(false);
-    setFallbackMode(false);
   }
 
-  /* ================================================================ */
-  /*  RENDER                                                           */
-  /* ================================================================ */
-
-  /* -- SUCCESS STATE ----------------------------------------------- */
   if (submitted) {
-    /* Fallback mode: API unavailable — guide the user to WhatsApp */
-    if (fallbackMode) {
-      return (
-        <section className="min-h-[80vh] flex items-center justify-center px-4 py-16">
-          <div className="max-w-md w-full text-center animate-fadeIn">
-            <div className="mx-auto mb-6 w-20 h-20 rounded-full bg-[#25D366]/10 border-2 border-[#25D366] flex items-center justify-center shadow-[0_0_30px_rgba(37,211,102,0.25)]">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" className="text-[#25D366]">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold mb-2" style={{ letterSpacing: '-0.02em' }}>
-              Almost there!
-            </h2>
-            <p className="text-[#8a8f98] mb-8">
-              To confirm your reservation, please message us on WhatsApp or Viber —
-              your booking details are ready to send.
-            </p>
-            <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 w-full rounded-full bg-[#25D366] px-8 py-4 text-base font-semibold text-white transition-all hover:bg-[#25D366]/90 hover:-translate-y-[1px] shadow-[0_0_24px_rgba(37,211,102,0.35)]"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-              </svg>
-              Send via WhatsApp
-            </a>
-            <a
-              href={VENUE_INFO.socials.viber}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 w-full rounded-full border border-[#7360F2] bg-transparent px-8 py-3 mt-3 text-sm font-medium text-[#7360F2] transition-all hover:bg-[#7360F2]/10"
-            >
-              Or message via Viber
-            </a>
-            <p className="text-xs text-[#62666d] mt-4">
-              Or call us directly: <span className="text-white font-medium">{VENUE_INFO.phone}</span>
-            </p>
-            <button
-              onClick={reset}
-              className="mt-6 text-sm text-[#8a8f98] hover:text-white transition-colors"
-            >
-              ← {t('booking.bookAnother')}
-            </button>
-          </div>
-        </section>
-      );
-    }
-
-    /* Standard success: API succeeded */
     return (
       <section className="min-h-[80vh] flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center animate-fadeIn">
-          {/* Checkmark with celebration ring */}
           <div className="relative mx-auto mb-6 w-20 h-20">
             <div className="absolute inset-0 rounded-full bg-success/5 animate-ping" style={{ animationDuration: '2s' }} />
             <div className="relative w-20 h-20 rounded-full bg-success/10 border-2 border-success flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.25)]">
@@ -349,11 +271,9 @@ function BookingFlow() {
     );
   }
 
-  /* -- MAIN FLOW --------------------------------------------------- */
   return (
     <section className="min-h-[80vh] pt-28 pb-16 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Title */}
         <h1
           className="text-3xl md:text-4xl font-bold text-center mb-10 gradient-text"
           style={{ letterSpacing: '-0.03em' }}
@@ -361,28 +281,41 @@ function BookingFlow() {
           {t('booking.title')}
         </h1>
 
-        {/* Step indicator */}
         <div className="mb-10">
           <StepIndicator steps={stepLabels} currentStep={step} />
         </div>
 
-        {/* Step content - simple conditional rendering */}
         <div className="min-h-[420px]">
-          {step === 0 && <Step1 form={form} patch={patch} t={t} onSelect={() => setStep(1)} />}
+          {step === 0 && (
+            <BranchStep
+              branchId={form.branch_id}
+              error={errors.branch_id}
+              onSelect={(id) => patch({ branch_id: id })}
+            />
+          )}
           {step === 1 && (
-            <Step2
+            <TypeStep
               form={form}
               patch={patch}
+              t={t}
+              onSelect={() => setStep(2)}
+            />
+          )}
+          {step === 2 && (
+            <DetailsStep
+              form={form}
+              patch={patch}
+              toggleActivity={toggleActivity}
               errors={errors}
-              selectedActivity={selectedActivity}
+              selectedActivities={selectedActivities}
               selectedPackage={selectedPackage}
-              isBowling={isBowling}
+              includesBowling={includesBowling}
               priceEstimate={priceEstimate}
               t={t}
             />
           )}
-          {step === 2 && (
-            <Step3
+          {step === 3 && (
+            <ContactStep
               form={form}
               patch={patch}
               errors={errors}
@@ -390,10 +323,10 @@ function BookingFlow() {
               t={t}
             />
           )}
-          {step === 3 && (
-            <Step4
+          {step === 4 && (
+            <ReviewStep
               form={form}
-              selectedActivity={selectedActivity}
+              selectedActivities={selectedActivities}
               selectedPackage={selectedPackage}
               priceEstimate={priceEstimate}
               t={t}
@@ -401,7 +334,6 @@ function BookingFlow() {
           )}
         </div>
 
-        {/* Navigation */}
         <div className="flex items-center justify-between mt-8 gap-4">
           {step > 0 ? (
             <Button variant="ghost" onClick={goBack}>
@@ -412,7 +344,7 @@ function BookingFlow() {
             <span />
           )}
 
-          {step < 3 ? (
+          {step < 4 ? (
             <Button onClick={goNext} size="lg">
               {t('booking.next')}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -430,26 +362,74 @@ function BookingFlow() {
         </div>
 
         {errors.submit && (
-          <p className="text-error text-sm text-center mt-4">
-            {errors.submit}
-          </p>
+          <p className="text-error text-sm text-center mt-4">{errors.submit}</p>
         )}
       </div>
     </section>
   );
 }
 
-/* ================================================================== */
-/*  STEP 1 -- Choose Type                                              */
-/* ================================================================== */
-function Step1({
+function BranchStep({
+  branchId,
+  error,
+  onSelect,
+}: {
+  branchId: string | null;
+  error?: string;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-lg font-semibold text-white mb-1">Choose your branch</h3>
+        <p className="text-sm text-[#8a8f98]">Select where you'd like to book.</p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {ALL_BRANCHES.map((b) => {
+          const active = branchId === b.id;
+          return (
+            <button
+              key={b.id}
+              type="button"
+              onClick={() => onSelect(b.id)}
+              className={[
+                'flex items-center gap-3 p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer',
+                'hover:-translate-y-[1px]',
+                active
+                  ? 'border-neon-blue bg-neon-blue/10 shadow-[0_0_24px_rgba(0,212,255,0.2)]'
+                  : 'border-border bg-bg-card hover:border-border-light',
+              ].join(' ')}
+            >
+              <span className="text-2xl" aria-hidden>{b.flag}</span>
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm font-semibold truncate ${active ? 'text-neon-blue' : 'text-white'}`}>
+                  {b.name}
+                </p>
+                <p className="text-xs text-[#62666d]">{b.city} · {b.country}</p>
+              </div>
+              <span
+                className={[
+                  'w-4 h-4 rounded-full border flex-shrink-0 transition-all',
+                  active ? 'border-neon-blue bg-neon-blue' : 'border-border-light',
+                ].join(' ')}
+              />
+            </button>
+          );
+        })}
+      </div>
+      {error && <p className="text-xs text-error">{error}</p>}
+    </div>
+  );
+}
+
+function TypeStep({
   form,
   patch,
   t,
   onSelect,
 }: {
-  form: BookingFormData;
-  patch: (p: Partial<BookingFormData>) => void;
+  form: BookingFormState;
+  patch: (p: Partial<BookingFormState>) => void;
   t: (key: string) => string;
   onSelect: () => void;
 }) {
@@ -496,10 +476,10 @@ function Step1({
             onClick={() => {
               patch({
                 type: opt.value,
-                activity_id: null,
+                activity_ids: [],
                 package_id: null,
                 package_type: null,
-                num_people: 1,
+                num_people: MIN_PEOPLE,
                 num_lanes: 1,
               });
               onSelect();
@@ -514,7 +494,6 @@ function Step1({
                 : 'border-border hover:border-border-light hover:shadow-[rgba(0,0,0,0.3)_0px_8px_24px]',
             ].join(' ')}
           >
-            {/* Selection dot */}
             <div
               className={[
                 'absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300',
@@ -547,52 +526,55 @@ function Step1({
   );
 }
 
-/* ================================================================== */
-/*  STEP 2 -- Details                                                  */
-/* ================================================================== */
-function Step2({
+function DetailsStep({
   form,
   patch,
+  toggleActivity,
   errors,
-  selectedActivity,
+  selectedActivities,
   selectedPackage,
-  isBowling,
+  includesBowling,
   priceEstimate,
   t,
 }: {
-  form: BookingFormData;
-  patch: (p: Partial<BookingFormData>) => void;
+  form: BookingFormState;
+  patch: (p: Partial<BookingFormState>) => void;
+  toggleActivity: (id: string) => void;
   errors: Record<string, string>;
-  selectedActivity: (typeof BOOKABLE_ACTIVITIES)[0] | null;
+  selectedActivities: typeof BOOKABLE_ACTIVITIES;
   selectedPackage: (typeof PACKAGES)[0] | null;
-  isBowling: boolean;
+  includesBowling: boolean;
   priceEstimate: number;
   t: (key: string) => string;
 }) {
   return (
     <div className="space-y-8">
-      {/* Activity / Package selector */}
       {form.type === 'activity' ? (
         <div>
           <label className="block text-sm font-medium text-[#8a8f98] mb-3">
-            {t('booking.selectActivity')}
+            Select one or more activities
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {BOOKABLE_ACTIVITIES.map((act) => {
-              const active = form.activity_id === act.id;
+              const active = form.activity_ids.includes(act.id);
               return (
                 <button
                   key={act.id}
                   type="button"
-                  onClick={() => patch({ activity_id: act.id })}
+                  onClick={() => toggleActivity(act.id)}
                   className={[
-                    'flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-200 cursor-pointer',
+                    'relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-200 cursor-pointer',
                     'hover:-translate-y-[2px]',
                     active
                       ? 'border-neon-blue bg-neon-blue/10 shadow-[0_0_24px_rgba(0,212,255,0.25),0_0_60px_rgba(0,212,255,0.08)]'
                       : 'border-border bg-bg-card hover:border-border-light hover:shadow-[rgba(0,0,0,0.3)_0px_8px_24px]',
                   ].join(' ')}
                 >
+                  {active && (
+                    <span className="absolute top-2 right-2 w-4 h-4 rounded-full bg-neon-blue text-bg flex items-center justify-center text-[10px] font-bold">
+                      ✓
+                    </span>
+                  )}
                   <span className="text-2xl">{act.icon}</span>
                   <span className={`text-sm font-medium ${active ? 'text-neon-blue' : 'text-white'}`}>
                     {act.name}
@@ -604,8 +586,11 @@ function Step2({
               );
             })}
           </div>
-          {errors.activity_id && (
-            <p className="text-xs text-error mt-2">{errors.activity_id}</p>
+          {errors.activity_ids && <p className="text-xs text-error mt-2">{errors.activity_ids}</p>}
+          {selectedActivities.length > 0 && (
+            <p className="text-xs text-[#62666d] mt-2">
+              Selected: {selectedActivities.map((a) => a.name).join(', ')}
+            </p>
           )}
         </div>
       ) : (
@@ -626,7 +611,6 @@ function Step2({
                 'neon-gold': 'text-neon-gold',
                 'neon-magenta': 'text-neon-magenta',
               };
-
               return (
                 <button
                   key={pkg.id}
@@ -635,7 +619,7 @@ function Step2({
                     patch({
                       package_id: pkg.id,
                       package_type: pkg.type,
-                      num_people: Math.max(form.num_people, pkg.minPeople),
+                      num_people: Math.max(form.num_people, MIN_PEOPLE, pkg.minPeople),
                     })
                   }
                   className={[
@@ -657,13 +641,10 @@ function Step2({
               );
             })}
           </div>
-          {errors.package_id && (
-            <p className="text-xs text-error mt-2">{errors.package_id}</p>
-          )}
+          {errors.package_id && <p className="text-xs text-error mt-2">{errors.package_id}</p>}
         </div>
       )}
 
-      {/* Date & Time */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <Input
@@ -700,33 +681,29 @@ function Step2({
               );
             })}
           </div>
-          {errors.time && (
-            <p className="text-xs text-error mt-2">{errors.time}</p>
-          )}
+          {errors.time && <p className="text-xs text-error mt-2">{errors.time}</p>}
         </div>
       </div>
 
-      {/* People */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <Input
-          label={t('booking.people')}
+          label={`${t('booking.people')} (min ${MIN_PEOPLE})`}
           type="number"
-          min={form.type === 'package' && selectedPackage ? selectedPackage.minPeople : 1}
+          min={MIN_PEOPLE}
           max={form.type === 'package' && selectedPackage ? selectedPackage.maxPeople : 200}
           value={form.num_people}
-          onChange={(e) => patch({ num_people: parseInt(e.target.value) || 1 })}
+          onChange={(e) => patch({ num_people: parseInt(e.target.value) || MIN_PEOPLE })}
           error={errors.num_people}
         />
-        {form.type === 'activity' && selectedActivity && (
+        {includesBowling && (
           <div className="flex items-end pb-2">
             <p className="text-xs text-[#8a8f98]">
-              Max {selectedActivity.capacity} pax{isBowling ? ' per lane (6 lanes available)' : ''}
+              Bowling capacity: 8 pax per lane × 6 lanes (max 48)
             </p>
           </div>
         )}
       </div>
 
-      {/* Price estimate */}
       {priceEstimate > 0 && (
         <div className="rounded-xl border border-neon-gold/30 bg-neon-gold/5 px-5 py-4 space-y-2">
           <div className="flex items-center justify-between">
@@ -746,18 +723,15 @@ function Step2({
   );
 }
 
-/* ================================================================== */
-/*  STEP 3 -- Contact Info                                             */
-/* ================================================================== */
-function Step3({
+function ContactStep({
   form,
   patch,
   errors,
   needsCompany,
   t,
 }: {
-  form: BookingFormData;
-  patch: (p: Partial<BookingFormData>) => void;
+  form: BookingFormState;
+  patch: (p: Partial<BookingFormState>) => void;
   errors: Record<string, string>;
   needsCompany: boolean;
   t: (key: string) => string;
@@ -770,11 +744,6 @@ function Step3({
         value={form.guest_name}
         onChange={(e) => patch({ guest_name: e.target.value })}
         error={errors.guest_name}
-        icon={
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-        }
       />
       <Input
         label={t('booking.email')}
@@ -783,11 +752,6 @@ function Step3({
         value={form.guest_email}
         onChange={(e) => patch({ guest_email: e.target.value })}
         error={errors.guest_email}
-        icon={
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-          </svg>
-        }
       />
       <Input
         label={t('booking.phone')}
@@ -796,31 +760,16 @@ function Step3({
         value={form.guest_phone}
         onChange={(e) => patch({ guest_phone: e.target.value })}
         error={errors.guest_phone}
-        icon={
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-          </svg>
-        }
       />
-
       <Input
         label={needsCompany ? t('booking.company') : t('booking.companyOptional')}
         placeholder="Company or school name"
         value={form.company_name}
         onChange={(e) => patch({ company_name: e.target.value })}
         error={errors.company_name}
-        icon={
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>
-          </svg>
-        }
       />
-
-      {/* Special requests */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-[#8a8f98]">
-          {t('booking.requests')}
-        </label>
+        <label className="text-sm font-medium text-[#8a8f98]">{t('booking.requests')}</label>
         <textarea
           rows={3}
           placeholder={t('booking.requestsPlaceholder')}
@@ -838,43 +787,37 @@ function Step3({
   );
 }
 
-/* ================================================================== */
-/*  STEP 4 -- Review & Submit                                          */
-/* ================================================================== */
-function Step4({
+function ReviewStep({
   form,
-  selectedActivity,
+  selectedActivities,
   selectedPackage,
   priceEstimate,
   t,
 }: {
-  form: BookingFormData;
-  selectedActivity: (typeof BOOKABLE_ACTIVITIES)[0] | null;
+  form: BookingFormState;
+  selectedActivities: typeof BOOKABLE_ACTIVITIES;
   selectedPackage: (typeof PACKAGES)[0] | null;
   priceEstimate: number;
   t: (key: string) => string;
 }) {
+  const branch = ALL_BRANCHES.find((b) => b.id === form.branch_id);
   const itemName =
     form.type === 'activity'
-      ? selectedActivity?.name ?? '-'
+      ? selectedActivities.length > 0
+        ? selectedActivities.map((a) => a.name).join(', ')
+        : '-'
       : selectedPackage?.name ?? '-';
 
   const rows: { label: string; value: string }[] = [
+    { label: 'Branch', value: branch ? `${branch.flag} ${branch.name}` : '-' },
     {
-      label: form.type === 'activity' ? t('booking.selectActivity') : t('booking.selectPackage'),
+      label: form.type === 'activity' ? 'Activities' : t('booking.selectPackage'),
       value: itemName,
     },
     { label: t('booking.date'), value: form.date || '-' },
     { label: t('booking.time'), value: form.time ? `${form.time} - ${addHour(form.time)}` : '-' },
     { label: t('booking.people'), value: String(form.num_people) },
   ];
-
-  if (form.type === 'activity' && selectedActivity) {
-    rows.push({
-      label: 'Rate',
-      value: `₱${selectedActivity.price.toLocaleString()} ${selectedActivity.priceLabel}`,
-    });
-  }
 
   if (form.type === 'package' && selectedPackage) {
     rows.push({
@@ -885,29 +828,22 @@ function Step4({
 
   return (
     <div className="space-y-6">
-      {/* Booking summary */}
       <Card glow="blue" className="!p-0 overflow-hidden">
         <div className="px-6 py-4 border-b border-border bg-neon-blue/5">
-          <h3
-            className="text-sm font-semibold text-neon-blue uppercase tracking-wider"
-            style={{ letterSpacing: '0.08em' }}
-          >
+          <h3 className="text-sm font-semibold text-neon-blue uppercase tracking-wider" style={{ letterSpacing: '0.08em' }}>
             {t('booking.summary')}
           </h3>
         </div>
         <div className="px-6 py-4 space-y-3">
           {rows.map((row) => (
-            <div key={row.label} className="flex justify-between items-center">
-              <span className="text-sm text-[#8a8f98]">{row.label}</span>
-              <span className="text-sm font-medium text-white">{row.value}</span>
+            <div key={row.label} className="flex justify-between items-start gap-4">
+              <span className="text-sm text-[#8a8f98] shrink-0">{row.label}</span>
+              <span className="text-sm font-medium text-white text-right">{row.value}</span>
             </div>
           ))}
-          {/* Divider */}
           <div className="border-t border-border my-2" />
           <div className="flex justify-between items-center">
-            <span className="text-sm font-semibold text-[#b3b3b3]">
-              {t('booking.estimatedTotal')}
-            </span>
+            <span className="text-sm font-semibold text-[#b3b3b3]">{t('booking.estimatedTotal')}</span>
             <span className="text-2xl font-extrabold text-neon-gold" style={{ letterSpacing: '-0.02em' }}>
               {formatCurrency(priceEstimate)}
             </span>
@@ -915,13 +851,9 @@ function Step4({
         </div>
       </Card>
 
-      {/* Contact summary */}
       <Card className="!p-0 overflow-hidden">
         <div className="px-6 py-4 border-b border-border bg-white/[0.02]">
-          <h3
-            className="text-sm font-semibold text-[#8a8f98] uppercase tracking-wider"
-            style={{ letterSpacing: '0.08em' }}
-          >
+          <h3 className="text-sm font-semibold text-[#8a8f98] uppercase tracking-wider" style={{ letterSpacing: '0.08em' }}>
             {t('booking.step3')}
           </h3>
         </div>
@@ -929,12 +861,8 @@ function Step4({
           <SummaryRow label={t('booking.name')} value={form.guest_name} />
           <SummaryRow label={t('booking.email')} value={form.guest_email} />
           <SummaryRow label={t('booking.phone')} value={form.guest_phone} />
-          {form.company_name && (
-            <SummaryRow label={t('booking.company')} value={form.company_name} />
-          )}
-          {form.special_requests && (
-            <SummaryRow label={t('booking.requests')} value={form.special_requests} />
-          )}
+          {form.company_name && <SummaryRow label={t('booking.company')} value={form.company_name} />}
+          {form.special_requests && <SummaryRow label={t('booking.requests')} value={form.special_requests} />}
         </div>
       </Card>
     </div>
@@ -950,9 +878,6 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-/* ================================================================== */
-/*  PAGE EXPORT (wraps in Suspense for useSearchParams)               */
-/* ================================================================== */
 export default function BookingPage() {
   return (
     <Suspense
