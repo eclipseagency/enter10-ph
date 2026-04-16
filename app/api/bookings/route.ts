@@ -101,11 +101,16 @@ export async function GET(request: NextRequest) {
     const dateTo = searchParams.get('date_to');
     const type = searchParams.get('type');
 
+    const branch = searchParams.get('branch');
+
     let query = getSupabase()
       .from('bookings')
       .select('*')
-      .eq('branch_id', PH_BRANCH_ID)
       .order('created_at', { ascending: false });
+
+    if (branch) {
+      query = query.eq('branch_id', branch);
+    }
 
     if (status) {
       query = query.eq('status', status);

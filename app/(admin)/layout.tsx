@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Button from '@/components/ui/Button';
@@ -39,22 +39,81 @@ function SettingsIcon() {
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/auth/me', { credentials: 'same-origin' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        setAuthenticated(Boolean(data?.authenticated));
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setCheckingSession(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple placeholder auth - accepts any non-empty credentials
-    if (email && password) {
-      setAuthenticated(true);
-      setError('');
-    } else {
+    if (!email || !password) {
       setError('Please enter email and password');
+      return;
+    }
+    setSubmitting(true);
+    setError('');
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ email, password }),
+      });
+      if (res.ok) {
+        setAuthenticated(true);
+        setPassword('');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data?.error || 'Invalid email or password');
+      }
+    } catch {
+      setError('Network error. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'same-origin',
+      });
+    } catch {
+      /* ignore */
+    }
+    setAuthenticated(false);
+    setEmail('');
+    setPassword('');
+  };
+
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-neon-blue border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!authenticated) {
     return (
@@ -90,8 +149,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 <p className="text-error text-sm text-center">{error}</p>
               )}
 
-              <Button type="submit" fullWidth>
-                Sign In
+              <Button type="submit" fullWidth disabled={submitting}>
+                {submitting ? 'Signing in…' : 'Sign In'}
               </Button>
             </form>
 
@@ -177,7 +236,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             View Site
           </Link>
           <button
-            onClick={() => setAuthenticated(false)}
+            onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-error/70 hover:text-error hover:bg-error/5 transition-all mt-1"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

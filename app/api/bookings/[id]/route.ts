@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
-import { PH_BRANCH_ID } from '@/lib/constants';
 
 export async function GET(
   _req: NextRequest,
@@ -13,7 +12,6 @@ export async function GET(
       .from('bookings')
       .select('*')
       .eq('id', id)
-      .eq('branch_id', PH_BRANCH_ID)
       .single();
 
     if (error || !data) {
@@ -54,7 +52,6 @@ export async function PATCH(
       .from('bookings')
       .update({ status })
       .eq('id', id)
-      .eq('branch_id', PH_BRANCH_ID)
       .select()
       .single();
 
