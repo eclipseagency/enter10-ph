@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
 import { verifySession, SESSION } from '@/lib/auth';
-import { ALL_BRANCHES, MIN_PEOPLE } from '@/lib/branches';
+import { ALL_BRANCHES, MIN_PEOPLE, PH_BRANCH_ID } from '@/lib/branches';
 
 export const runtime = 'nodejs';
 
@@ -36,6 +36,13 @@ export async function POST(request: NextRequest) {
 
     if (!branch_id || !ALL_BRANCHES.find((b) => b.id === branch_id)) {
       return Response.json({ error: 'Please select a valid branch' }, { status: 400 });
+    }
+    // The /ph site is dedicated to the Philippines branch only.
+    if (branch_id !== PH_BRANCH_ID) {
+      return Response.json(
+        { error: 'This booking endpoint only accepts Philippines bookings' },
+        { status: 400 },
+      );
     }
 
     const peopleCount = Number(num_people) || 0;

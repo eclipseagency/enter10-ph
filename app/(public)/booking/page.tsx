@@ -84,7 +84,7 @@ function BookingFlow() {
           package_type: matched.type,
           num_people: Math.max(matched.minPeople, MIN_PEOPLE),
         }));
-        setStep(2);
+        setStep(1);
       }
     }
   }, [searchParams]);
@@ -118,7 +118,7 @@ function BookingFlow() {
     return 0;
   }, [form.type, selectedActivities, selectedPackage, form.num_people]);
 
-  const stepLabels = ['Branch', t('booking.step1'), t('booking.step2'), t('booking.step3'), t('booking.step4')];
+  const stepLabels = [t('booking.step1'), t('booking.step2'), t('booking.step3'), t('booking.step4')];
 
   function patch(partial: Partial<BookingFormState>) {
     setForm((f) => ({ ...f, ...partial }));
@@ -147,7 +147,7 @@ function BookingFlow() {
 
   function goNext() {
     if (!validateStep()) return;
-    setStep((s) => Math.min(s + 1, 4));
+    setStep((s) => Math.min(s + 1, 3));
   }
 
   function goBack() {
@@ -157,11 +157,7 @@ function BookingFlow() {
   function validateStep(): boolean {
     const errs: Record<string, string> = {};
 
-    if (step === 0) {
-      if (!form.branch_id) errs.branch_id = 'Please select a branch';
-    }
-
-    if (step === 2) {
+    if (step === 1) {
       if (form.type === 'activity' && form.activity_ids.length === 0) {
         errs.activity_ids = 'Please select at least one activity';
       }
@@ -185,7 +181,7 @@ function BookingFlow() {
       }
     }
 
-    if (step === 3) {
+    if (step === 2) {
       if (!form.guest_name.trim()) errs.guest_name = 'Name is required';
       if (!form.guest_email.trim()) errs.guest_email = 'Email is required';
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.guest_email))
@@ -287,21 +283,14 @@ function BookingFlow() {
 
         <div className="min-h-[420px]">
           {step === 0 && (
-            <BranchStep
-              branchId={form.branch_id}
-              error={errors.branch_id}
-              onSelect={(id) => patch({ branch_id: id })}
-            />
-          )}
-          {step === 1 && (
             <TypeStep
               form={form}
               patch={patch}
               t={t}
-              onSelect={() => setStep(2)}
+              onSelect={() => setStep(1)}
             />
           )}
-          {step === 2 && (
+          {step === 1 && (
             <DetailsStep
               form={form}
               patch={patch}
@@ -314,7 +303,7 @@ function BookingFlow() {
               t={t}
             />
           )}
-          {step === 3 && (
+          {step === 2 && (
             <ContactStep
               form={form}
               patch={patch}
@@ -323,7 +312,7 @@ function BookingFlow() {
               t={t}
             />
           )}
-          {step === 4 && (
+          {step === 3 && (
             <ReviewStep
               form={form}
               selectedActivities={selectedActivities}
@@ -344,7 +333,7 @@ function BookingFlow() {
             <span />
           )}
 
-          {step < 4 ? (
+          {step < 3 ? (
             <Button onClick={goNext} size="lg">
               {t('booking.next')}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -366,59 +355,6 @@ function BookingFlow() {
         )}
       </div>
     </section>
-  );
-}
-
-function BranchStep({
-  branchId,
-  error,
-  onSelect,
-}: {
-  branchId: string | null;
-  error?: string;
-  onSelect: (id: string) => void;
-}) {
-  return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold text-white mb-1">Choose your branch</h3>
-        <p className="text-sm text-[#8a8f98]">Select where you'd like to book.</p>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {ALL_BRANCHES.map((b) => {
-          const active = branchId === b.id;
-          return (
-            <button
-              key={b.id}
-              type="button"
-              onClick={() => onSelect(b.id)}
-              className={[
-                'flex items-center gap-3 p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer',
-                'hover:-translate-y-[1px]',
-                active
-                  ? 'border-neon-blue bg-neon-blue/10 shadow-[0_0_24px_rgba(0,212,255,0.2)]'
-                  : 'border-border bg-bg-card hover:border-border-light',
-              ].join(' ')}
-            >
-              <span className="text-2xl" aria-hidden>{b.flag}</span>
-              <div className="flex-1 min-w-0">
-                <p className={`text-sm font-semibold truncate ${active ? 'text-neon-blue' : 'text-white'}`}>
-                  {b.name}
-                </p>
-                <p className="text-xs text-[#62666d]">{b.city} · {b.country}</p>
-              </div>
-              <span
-                className={[
-                  'w-4 h-4 rounded-full border flex-shrink-0 transition-all',
-                  active ? 'border-neon-blue bg-neon-blue' : 'border-border-light',
-                ].join(' ')}
-              />
-            </button>
-          );
-        })}
-      </div>
-      {error && <p className="text-xs text-error">{error}</p>}
-    </div>
   );
 }
 
