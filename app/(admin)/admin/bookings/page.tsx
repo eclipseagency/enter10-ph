@@ -62,7 +62,7 @@ export default function BookingsPage() {
       if (dateFrom) params.set('date_from', dateFrom);
       if (dateTo) params.set('date_to', dateTo);
 
-      const res = await fetch(`/api/bookings?${params.toString()}`);
+      const res = await fetch(`/ph/api/bookings?${params.toString()}`);
       const json = await res.json();
       setBookings(json.bookings || []);
     } catch {
@@ -78,7 +78,7 @@ export default function BookingsPage() {
 
   const handleStatusChange = async (id: string, status: 'confirmed' | 'cancelled') => {
     try {
-      const res = await fetch(`/api/bookings/${id}`, {
+      const res = await fetch(`/ph/api/bookings/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),

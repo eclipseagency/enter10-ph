@@ -47,7 +47,7 @@ export default function AdminDashboard() {
 
   const fetchBookings = useCallback(async () => {
     try {
-      const res = await fetch('/api/bookings');
+      const res = await fetch('/ph/api/bookings');
       const json = await res.json();
       setBookings(json.bookings || []);
     } catch {
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
 
   const handleStatusChange = async (id: string, status: 'confirmed' | 'cancelled') => {
     try {
-      const res = await fetch(`/api/bookings/${id}`, {
+      const res = await fetch(`/ph/api/bookings/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),

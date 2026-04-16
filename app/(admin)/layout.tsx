@@ -57,7 +57,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/auth/me', { credentials: 'same-origin' })
+    fetch('/ph/api/auth/me', { credentials: 'same-origin' })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (cancelled) return;
@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     setSubmitting(true);
     setError('');
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('/ph/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
@@ -108,7 +108,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', {
+      await fetch('/ph/api/auth/logout', {
         method: 'POST',
         credentials: 'same-origin',
       });
